@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ru.ivanov_chkadua.sprites.SpriteTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2015-12-19T12:33:35" hostname="Nikolay-PC" time="0.549">
+  <properties/>
+  <testcase name="spriteShouldOverlap" classname="ru.ivanov_chkadua.sprites.SpriteTest" time="0.549"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
