@@ -18,46 +18,46 @@ import ru.ivanov_chkadua.sprites.Sprite;
 
 public class GameMap extends Canvas {
 	private static GameMap instance;
-	public final static Image TREE_IMAGE = new Image(MainWindow.getDisplay(), "C:/Users/Николай/workspace/JavaGame/img/tree.png");
-	public final static Image RUNNING_DUDE = new Image(MainWindow.getDisplay(), "C:/Users/Николай/workspace/JavaGame/img/1.png");
-	public final static Image STATIC_BACK = new Image(MainWindow.getDisplay(), "C:/Users/Николай/workspace/JavaGame/img/static_back_1.png");
-	public final static Image BACK_1 = new Image(MainWindow.getDisplay(), "C:/Users/Николай/workspace/JavaGame/img/back_1.png");
-	public final static Image BACK_2 = new Image(MainWindow.getDisplay(), "C:/Users/Николай/workspace/JavaGame/img/back_2.png");
+	public final static Image TREE_IMAGE = new Image(MainWindow.getDisplay(), "./img/tree.png");
+	public final static Image RUNNING_DUDE = new Image(MainWindow.getDisplay(), "./img/1.png");
+	public final static Image STATIC_BACK = new Image(MainWindow.getDisplay(), "./img/static_back_1.png");
+	public final static Image BACK_1 = new Image(MainWindow.getDisplay(), "./img/back_1.png");
+	public final static Image BACK_2 = new Image(MainWindow.getDisplay(), "./img/back_2.png");
 	
 	public final static Image[] DUDE_RUN = {
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/run/1.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/run/2.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/run/3.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/run/4.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/run/5.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/run/6.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/run/7.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/run/8.png")
+			new Image(Display.getCurrent(), "./img/run/1.png"),
+			new Image(Display.getCurrent(), "./img/run/2.png"),
+			new Image(Display.getCurrent(), "./img/run/3.png"),
+			new Image(Display.getCurrent(), "./img/run/4.png"),
+			new Image(Display.getCurrent(), "./img/run/5.png"),
+			new Image(Display.getCurrent(), "./img/run/6.png"),
+			new Image(Display.getCurrent(), "./img/run/7.png"),
+			new Image(Display.getCurrent(), "./img/run/8.png")
 	};
 	public final static Image[] DUDE_JUMP = {
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/jump/1.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/jump/2.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/jump/3.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/jump/4.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/jump/5.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/jump/6.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/jump/7.png")
+			new Image(Display.getCurrent(), "./img/jump/1.png"),
+			new Image(Display.getCurrent(), "./img/jump/2.png"),
+			new Image(Display.getCurrent(), "./img/jump/3.png"),
+			new Image(Display.getCurrent(), "./img/jump/4.png"),
+			new Image(Display.getCurrent(), "./img/jump/5.png"),
+			new Image(Display.getCurrent(), "./img/jump/6.png"),
+			new Image(Display.getCurrent(), "./img/jump/7.png")
 	};
 	public final static Image[] DUDE_ROLL = {
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/roll/1.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/roll/2.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/roll/3.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/roll/4.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/roll/5.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/roll/6.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/roll/7.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/roll/8.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/roll/9.png"),
-			new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/roll/10.png")
+			new Image(Display.getCurrent(), "./img/roll/1.png"),
+			new Image(Display.getCurrent(), "./img/roll/2.png"),
+			new Image(Display.getCurrent(), "./img/roll/3.png"),
+			new Image(Display.getCurrent(), "./img/roll/4.png"),
+			new Image(Display.getCurrent(), "./img/roll/5.png"),
+			new Image(Display.getCurrent(), "./img/roll/6.png"),
+			new Image(Display.getCurrent(), "./img/roll/7.png"),
+			new Image(Display.getCurrent(), "./img/roll/8.png"),
+			new Image(Display.getCurrent(), "./img/roll/9.png"),
+			new Image(Display.getCurrent(), "./img/roll/10.png")
 	};
 	
-	public final static Image BRANCH = new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/branch.png");
-	public final static Image CLOUD = new Image(Display.getCurrent(), "C:/Users/Николай/workspace/JavaGame/img/cloud.png");
+	public final static Image BRANCH = new Image(Display.getCurrent(), "./img/branch.png");
+	public final static Image CLOUD = new Image(Display.getCurrent(), "./img/cloud.png");
 	
 	private static Color blue = new Color(Display.getCurrent(), 102, 204, 255);
 	public static Color red = new Color(Display.getCurrent(), 255, 0, 0);

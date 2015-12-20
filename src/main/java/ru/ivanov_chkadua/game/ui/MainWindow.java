@@ -44,7 +44,7 @@ public class MainWindow {
 		Font bigFont = new Font(display, new FontData("Tahoma", 30, SWT.BOLD));
 		
 		Label start = new Label(shell, SWT.BOTTOM);
-		start.setText("Õ¿◊¿“‹ »√–”");
+		start.setText("–ù–ê–ß–ê–¢–¨ –ò–ì–†–£");
 		start.setBackground(white);
 		start.setFont(simpleFont);
 		GridData gridData = new GridData(SWT.CENTER, SWT.BOTTOM, true, true);
@@ -56,17 +56,17 @@ public class MainWindow {
 		
 		Label easy = new Label(shell, SWT.FILL);
 		easy.setBackground(white);
-		easy.setText("À≈√ Œ");
+		easy.setText("–õ–ï–ì–ö–û");
 		easy.setFont(bigFont);
 		
 		Label normal = new Label(shell, SWT.FILL);
 		normal.setBackground(white);
-		normal.setText("ÕŒ–Ã¿À‹ÕŒ");
+		normal.setText("–ù–û–†–ú–ê–õ–¨–ù–û");
 		normal.setFont(simpleFont);
 		
 		Label hard = new Label(shell, SWT.FILL);
 		hard.setBackground(white);
-		hard.setText("—ÀŒ∆ÕŒ");
+		hard.setText("–°–õ–û–ñ–ù–û");
 		hard.setFont(simpleFont);
 		GridData gridData2 = new GridData(SWT.CENTER, SWT.CENTER, true, true);
 		gridData2.widthHint = SWT.DEFAULT;

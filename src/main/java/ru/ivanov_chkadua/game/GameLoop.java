@@ -10,6 +10,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 
 import ru.ivanov_chkadua.game.ui.MainWindow;
+import ru.ivanov_chkadua.sprites.Back;
 import ru.ivanov_chkadua.sprites.BlockOfTreeTrees;
 import ru.ivanov_chkadua.sprites.BlockTwoStonesOneTree;
 import ru.ivanov_chkadua.sprites.Dude;
@@ -103,20 +104,24 @@ public class GameLoop{
 		players.add(dude);
 		
 		ArrayList<Sprite> backgrounds = new ArrayList<>();
-//		Sprite back = new Back(GameMap.BACK_1);
-//		backgrounds.add(back);
-//		Sprite back1 = new Back(back, GameMap.BACK_2);
-//		backgrounds.add(back1);
-//		Sprite back2 = new Back(back1, GameMap.BACK_1);
-//		backgrounds.add(back2);
-//		Sprite back3 = new Back(back2, GameMap.BACK_1);
-//		backgrounds.add(back3);
+		Sprite back = new Back(GameMap.BACK_1);
+		back.replace(-100, 0);
+		backgrounds.add(back);
+		Sprite back1 = new Back(back, GameMap.BACK_2);
+		backgrounds.add(back1);
+		Sprite back2 = new Back(back1, GameMap.BACK_1);
+		backgrounds.add(back2);
+		Sprite back3 = new Back(back2, GameMap.BACK_1);
+		backgrounds.add(back3);
+		Sprite back4 = new Back(back3, GameMap.BACK_2);
+		backgrounds.add(back4);
 		 
 		GameLoop loop = GameLoop.createLoop();
 		loop.buildMap();
 		loop.addManager(new InteractionManager());
 		loop.addManager(new Camera().spy(dude));
 		loop.addManager(new BlockGenerator(difficulty));
+		loop.addManager(new BackgroundGenerator());
 		loop.addManager(new CloudManager());
 		loop.putObjects(players, sprites, backgrounds);
 		

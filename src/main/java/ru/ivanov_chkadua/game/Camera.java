@@ -21,7 +21,7 @@ public class Camera implements Manager {
 		}
 		for (Sprite sprite: GameLoop.getGameLoop().getBackgrounds()){
 			if (sprite.isMovable())
-				sprite.replace(-x, 0);
+				sprite.replace(-x / 2, 0);
 		}
 	}
 	

@@ -21,9 +21,9 @@ public class Dude extends Sprite{
 		
 		super(new Polygon()
 				.setLeftDown(0, 0)
-				.setLeftUp(0, 200)
-				.setRightDown(150, 0)
-				.setRightUp(150, 200), GameMap.RUNNING_DUDE, false);
+				.setLeftUp(0, 175)
+				.setRightDown(85, 0)
+				.setRightUp(85, 175), GameMap.RUNNING_DUDE, false);
 		//Implementing base commands
 		jump = new Command(){
 
@@ -122,13 +122,13 @@ public class Dude extends Sprite{
 				if (rolling || jumping || !isRunning())
 					return;
 				rolling = true;
-				moveUpPoints(-70);
+				moveUpPoints(-50);
 				TimerTask roll = new TimerTask(){
 
 					@Override
 					public void run() {
-						moveUpPoints(-40);
-						moveRightPoints(40);						
+						moveUpPoints(-35);
+						moveRightPoints(35);						
 					}
 					
 				};
@@ -137,8 +137,8 @@ public class Dude extends Sprite{
 
 					@Override
 					public void run() {
-						moveUpPoints(40);
-						moveRightPoints(-40);						
+						moveUpPoints(35);
+						moveRightPoints(-35);						
 					}
 					
 				};
@@ -147,7 +147,7 @@ public class Dude extends Sprite{
 
 					@Override
 					public void run() {
-						moveUpPoints(70);
+						moveUpPoints(50);
 						rolling = false;					
 					}
 					

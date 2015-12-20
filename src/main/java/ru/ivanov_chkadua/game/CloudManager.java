@@ -34,9 +34,9 @@ public class CloudManager implements Manager {
 											
 											@Override
 											public void run() {
-												cloud.replace(-2, 0);
+												cloud.replace(-4, 0);
 											}
-										}, 200, new Random().nextInt(200) + 30);
+										}, 200, new Random().nextInt(100) + 20);
 									}
 								});
 								cloud.replace(x, height);
