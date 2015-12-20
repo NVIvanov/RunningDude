@@ -1,5 +1,10 @@
 package ru.ivanov_chkadua.sprites;
 
+/**
+ * Класс полигона, полигон состоит из четырех точек
+ * @author n_ivanov
+ *
+ */
 public class Polygon{
 	public Point leftUp = new Point(0, 0);
 	public Point leftDown = new Point(0, 0);
@@ -42,6 +47,11 @@ public class Polygon{
 		return this;
 	}
 	
+	/**
+	 * Определяет накладывается один полигон на другой
+	 * @param other другой полигон
+	 * @return true, если накладывается, false иначе
+	 */
 	public boolean overlaps(Polygon other){
 		return includes(other.leftDown) ||
 				includes(other.leftUp) ||
@@ -56,6 +66,11 @@ public class Polygon{
 				rightDown.x >= point.x && rightDown.y <= point.y;
 	}
 	
+	/**
+	 * метод перемещения полигона (синхронизирован)
+	 * @param x на столько переместить по x
+	 * @param y на столько переместить по y
+	 */
 	synchronized public void replace(int x, int y){
 		leftUp.x += x;
 		leftDown.x += x;
@@ -67,19 +82,34 @@ public class Polygon{
 		rightDown.y += y;
 	}
 	
+	/**
+	 * 
+	 * @return true, если полигон находится на уровне земли (y = 0), false иначе
+	 */
 	public boolean onGroundLevel(){
 		return leftDown.y <= 0 || rightDown.y <= 0;
 	}
 	
+	/**
+	 * Корректирует уровень расположения полигона, перемещает его до уровня земли
+	 */
 	public void alignLevel(){
 		replace(0, -Math.min(leftDown.y, rightDown.y));
 	}
 	
+	/**
+	 * перемещает верхние точки
+	 * @param y на столько переместятся верхние точки
+	 */
 	public void moveUpPoints(double y){
 		leftUp.y += y;
 		rightUp.y += y;
 	}
 	
+	/**
+	 * перемещает правые точки
+	 * @param x на столько переместятся правые точки
+	 */
 	public void moveRightPoints(double x){
 		rightUp.x += x;
 		rightDown.x += x;

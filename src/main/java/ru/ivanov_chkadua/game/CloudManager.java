@@ -6,10 +6,17 @@ import java.util.TimerTask;
 
 import ru.ivanov_chkadua.game.ui.MainWindow;
 import ru.ivanov_chkadua.sprites.Cloud;
-
-public class CloudManager implements Manager {
+/**
+ * 
+ * @author n_ivanov
+ * Менеджер облаков, добавляет облака
+ */
+final public class CloudManager implements Manager {
 	private boolean launched;
 	
+	/**
+	 * Запускает периодическое появление облаков. Выполняет запуск этого процесса один раз за время жизни объекта
+	 */
 	@Override
 	public void manage() {
 		if (!launched)
@@ -26,6 +33,7 @@ public class CloudManager implements Manager {
 								int height = new Random().nextInt(MainWindow.getShell().getBounds().height - 400) + 200;
 								int x = MainWindow.getShell().getBounds().width + 100;
 								Cloud cloud = new Cloud();
+								cloud.setZLevel(1.5);
 								cloud.execute(new Command() {
 									
 									@Override
@@ -40,7 +48,7 @@ public class CloudManager implements Manager {
 									}
 								});
 								cloud.replace(x, height);
-								GameLoop.getGameLoop().getSprites().add(cloud);	
+								GameLoop.getGameLoop().addSprite(cloud);
 							}
 								
 						}

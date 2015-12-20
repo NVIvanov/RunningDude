@@ -2,6 +2,11 @@ package ru.ivanov_chkadua.sprites;
 
 import ru.ivanov_chkadua.game.GameMap;
 
+/**
+ * Бревно
+ * @author n_ivanov
+ *
+ */
 public class TreeSprite extends Sprite {
 
 	public TreeSprite(){

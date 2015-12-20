@@ -1,5 +1,10 @@
 package ru.ivanov_chkadua.sprites;
 
+/**
+ * Класс точки
+ * @author n_ivanov
+ *
+ */
 public class Point {
 	public int x;
 	public int y;

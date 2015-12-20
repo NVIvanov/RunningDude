@@ -2,6 +2,11 @@ package ru.ivanov_chkadua.sprites;
 
 import ru.ivanov_chkadua.game.GameMap;
 
+/**
+ * Дерево с шипами (декорация)
+ * @author n_ivanov
+ *
+ */
 public class TreeWithBranchSprite extends Sprite{
 
 	public TreeWithBranchSprite() {

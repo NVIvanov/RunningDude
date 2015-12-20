@@ -1,5 +1,10 @@
 package ru.ivanov_chkadua.sprites;
 
+/**
+ * Блок препятствий из двух деревьев с шипованными ветками и двух бревен
+ * @author n_ivanov
+ *
+ */
 public class BlockTwoStonesOneTree extends Sprite{
 
 	public BlockTwoStonesOneTree() {

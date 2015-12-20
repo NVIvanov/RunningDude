@@ -6,6 +6,11 @@ import java.util.TimerTask;
 import ru.ivanov_chkadua.game.Command;
 import ru.ivanov_chkadua.game.GameMap;
 
+/**
+ * Игрок
+ * @author n_ivanov
+ *
+ */
 public class Dude extends Sprite{
 	private static final int START_SPEED_Y = 18;
 	private static final long ONE_SECOND = 1000;
@@ -16,6 +21,9 @@ public class Dude extends Sprite{
 	
 	
 
+	/**
+	 * Инициализирует игрока как спрайт и внедряет команды бега, остановки, прыжка и кувырка
+	 */
 	public Dude(){
 		
 		
@@ -23,7 +31,9 @@ public class Dude extends Sprite{
 				.setLeftDown(0, 0)
 				.setLeftUp(0, 175)
 				.setRightDown(85, 0)
-				.setRightUp(85, 175), GameMap.RUNNING_DUDE, false);
+				.setRightUp(85, 175), GameMap.DUDE_RUN[0], false);
+		
+		setZLevel(0.99);
 		//Implementing base commands
 		jump = new Command(){
 
@@ -177,23 +187,38 @@ public class Dude extends Sprite{
 		
 	}
 
-	
+	/**
+	 * Вызвать команду прыжка
+	 */
 	public void jump(){
 		execute(jump);
 	}
 	
+	/**
+	 * Вызвать команду бега
+	 */
 	public void run(){
 		execute(run);
 	}
 	
+	/**
+	 * Вызвать команду остановки
+	 */
 	public void stop(){
 		execute(stop);
 	}
 	
+	/**
+	 * Вызвать команду кувырка
+	 */
 	public void roll(){
 		execute(roll);
 	}
 	
+	/**
+	 * Устанавливает ускорение, раз в 6 сек скорость увеличивается на указанную величину.
+	 * @param a величина ускорения
+	 */
 	public void setAcceleration(int a){
 		new Timer().schedule(new TimerTask(){
 
@@ -210,10 +235,18 @@ public class Dude extends Sprite{
 	}
 
 
+	/**
+	 * 
+	 * @return true, если игрок бежит, false иначе
+	 */
 	public boolean isRunning() {
 		return running;
 	}
 	
+	/**
+	 * Возвращает расстояние, которое пробежал игрок
+	 * @return расстояние
+	 */
 	public int getPassed() {
 		return passed;
 	}

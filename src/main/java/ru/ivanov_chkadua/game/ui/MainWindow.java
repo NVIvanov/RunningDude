@@ -20,23 +20,58 @@ import org.eclipse.swt.widgets.Shell;
 import ru.ivanov_chkadua.game.GameLoop;
 import ru.ivanov_chkadua.game.GameMap;
 
+/**
+ * Основное окно, в котором отображается игровая сцена
+ * @author n_ivanov
+ *
+ */
 public class MainWindow {
 	private static Shell shell;
 	private static Display display;
 	private static int difficulty = 1;
 	
+	/**
+	 * Метод получения кэшированного объекта Shell
+	 * @return кэшированный объект Shell
+	 */
 	public static Shell getShell(){
 		return shell;
 	}
 	
+	/**
+	 * Метод получения кэшированного объекта Display
+	 * @return кэшированный объект Display
+	 */
 	public static Display getDisplay(){
 		return display;
 	}
 	
+	/**
+	 * Создает и кэширует объекты Display и Shell, создает главное меню игры
+	 * @param args
+	 */
 	public static void main(String[] args){
 		display = new Display();
 		shell = new Shell(display);
 		
+		setupMainMenu();
+		shell.open();
+		
+		
+		while (!shell.isDisposed()){
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
+		
+		shell.dispose();
+		display.dispose();
+		
+	}
+
+	/**
+	 * Создает главное меню игры
+	 */
+	private static void setupMainMenu() {
 		Color white = new Color(display, 255, 255, 255);
 		shell.setBackground(white);
 		
@@ -222,16 +257,5 @@ public class MainWindow {
 				}
 			}
 		});
-		shell.open();
-		
-		
-		while (!shell.isDisposed()){
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		
-		shell.dispose();
-		display.dispose();
-		
 	}
 }

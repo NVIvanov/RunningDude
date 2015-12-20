@@ -1,5 +1,10 @@
 package ru.ivanov_chkadua.sprites;
 
+/**
+ * Блок препятствий из трех бревен
+ * @author n_ivanov
+ *
+ */
 public class BlockOfTreeTrees extends Sprite {
 
 	public BlockOfTreeTrees() {

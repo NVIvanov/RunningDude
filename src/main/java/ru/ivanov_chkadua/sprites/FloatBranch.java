@@ -1,5 +1,10 @@
 package ru.ivanov_chkadua.sprites;
 
+/**
+ * Плавающая ветка (препятствие)
+ * @author n_ivanov
+ *
+ */
 public class FloatBranch extends Sprite {
 
 	public FloatBranch() {

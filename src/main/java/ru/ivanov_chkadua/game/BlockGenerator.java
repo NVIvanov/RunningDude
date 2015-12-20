@@ -8,13 +8,27 @@ import ru.ivanov_chkadua.sprites.BlockOfTreeTrees;
 import ru.ivanov_chkadua.sprites.BlockTwoStonesOneTree;
 import ru.ivanov_chkadua.sprites.Sprite;
 
-public class BlockGenerator implements Manager{
+/**
+ * 
+ * @author n_ivanov
+ * Менеджер блоков препятствий
+ */
+final public class BlockGenerator implements Manager{
+	private static final String EMPTY_LIST_OF_INTERACTIVE_SPRITES = "Внедрять менеджер блоков препятствий можно только, если препятствия присутствуют в игровом цикле.";
 	private int standartOffset;
-	
+	/**
+	 * Конструктор менеджера блоков пропятствий
+	 * @param difficultLevel уровень сложности, по которому определяется расстояние между блоками
+	 */
 	public BlockGenerator(int difficultLevel){
 		setOffset(difficultLevel);
 	}
 	
+	/**
+	 * Функция, определяющая стандартное расстояние между блоками.
+	 * @param level уровень сложности, по которому определяется расстояние (может быть 1, 2, 3)
+	 * @throws IllegalArgumentException в качестве уровня сложности указано неизвестное число.
+	 */
 	private void setOffset(int level){
 		switch(level){
 		case 1:
@@ -26,17 +40,25 @@ public class BlockGenerator implements Manager{
 		case 3:
 			standartOffset = 500;
 			break;
+		default:
+			throw new IllegalArgumentException("Неподдерживаемый уровень сложности");
 		}
 	}
 	
+	/**
+	 * Проверяет, вышло за границу экрана какое-либо препятствие, и, если это так, удаляет его из игрового цикла и со сцены, добавляя новое
+	 * @throws IllegalStateException препятствия отсутствуют в игровом цикле
+	 */
 	@Override
 	public void manage() {
-		Sprite firstBlock = GameLoop.getGameLoop().getSprites().get(0);
+		Sprite firstBlock = getFirstInteractiveSprite();
+		if (firstBlock == null)
+			throw new IllegalStateException(EMPTY_LIST_OF_INTERACTIVE_SPRITES);
 		Sprite lastBlock = getNearestInteractiveSprite();
 		Rectangle firstBlockBounds = firstBlock.bounds();
 		Rectangle lastBlockBounds = lastBlock.bounds();
 		if (firstBlockBounds.x + firstBlockBounds.width < 0){
-			GameLoop.getGameLoop().getSprites().remove(firstBlock);
+			GameLoop.getGameLoop().removeSprite(firstBlock);
 			int rand = new Random().nextInt(100);
 			Sprite newBlock;
 			if (rand % 2 == 0)
@@ -45,10 +67,25 @@ public class BlockGenerator implements Manager{
 				newBlock = new BlockTwoStonesOneTree();
 			newBlock.replace(lastBlockBounds.width + lastBlockBounds.x + standartOffset, 0);
 			System.out.println(rand);
-			GameLoop.getGameLoop().getSprites().add(newBlock);
+			GameLoop.getGameLoop().addSprite(newBlock);
 		}
 	}
 	
+	/**
+	 * 
+	 * @return первое препятствие в списке препятствий игрового цикла
+	 */
+	private Sprite getFirstInteractiveSprite(){
+		for (int i = 0; i < GameLoop.getGameLoop().getSprites().size(); i++)
+			if (GameLoop.getGameLoop().getSprites().get(i).isInteractive())
+				return GameLoop.getGameLoop().getSprites().get(i);
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @return последнее препятствие в списке препятствий игрового цикла
+	 */
 	private Sprite getNearestInteractiveSprite(){
 		for (int i = GameLoop.getGameLoop().getSprites().size() - 1; i >= 0; i--)
 			if (GameLoop.getGameLoop().getSprites().get(i).isInteractive())
