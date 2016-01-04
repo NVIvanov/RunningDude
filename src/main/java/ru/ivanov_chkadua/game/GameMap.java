@@ -126,7 +126,7 @@ final public class GameMap extends Canvas {
 				e.gc.setTransform(tr);
 				
 				for (int i = 0; i < objects.size(); i++){
-					if (objects.get(i).bounds().x + objects.get(i).bounds().width < 0 && (objects.get(i) instanceof Dude))
+					if (objects.get(i).bounds().x + objects.get(i).bounds().width < -300 && !(objects.get(i) instanceof Dude))
 						GameLoop.getGameLoop().removeSprite(objects.get(i));
 					else
 						objects.get(i).paint(e);

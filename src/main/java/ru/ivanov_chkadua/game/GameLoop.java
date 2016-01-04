@@ -127,6 +127,7 @@ public class GameLoop{
 	 * @throws IllegalStateException цикл запущен перед инициализацией объектов.
 	 */
 	final public void start(){
+		alive = true;
 		if (players == null || sprites == null || backgrounds == null)
 			throw new IllegalStateException("Нужно инициализировать объекты игрового цикла, прежде чем запускать его.");
 		Display.getCurrent().asyncExec(new Runnable(){
