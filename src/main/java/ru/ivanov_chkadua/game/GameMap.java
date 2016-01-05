@@ -29,6 +29,7 @@ final public class GameMap extends Canvas {
 	private static final String INIT_MAP_USING_NULL_LISTS = "Инициализация карты проводится на основе объектов игрового цикла, вызывайте инициализацию после добавления объектов в игровой цикл";
 	private static GameMap instance;
 	public final static Image TREE_IMAGE = new Image(MainWindow.getDisplay(), "./img/tree.png");
+	public final static Image SNOWBALL_IMAGE = new Image(MainWindow.getDisplay(), "./img/snowball.png");
 	public final static Image STATIC_BACK = new Image(MainWindow.getDisplay(), "./img/static_back_1.png");
 	public final static Image BACK_1 = new Image(MainWindow.getDisplay(), "./img/back_1.png");
 	public final static Image BACK_2 = new Image(MainWindow.getDisplay(), "./img/back_2.png");

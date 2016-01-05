@@ -11,11 +11,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Display;
 
 import ru.ivanov_chkadua.game.ui.MainWindow;
-import ru.ivanov_chkadua.sprites.Back;
-import ru.ivanov_chkadua.sprites.BlockOfTreeTrees;
-import ru.ivanov_chkadua.sprites.BlockTwoStonesOneTree;
-import ru.ivanov_chkadua.sprites.Dude;
-import ru.ivanov_chkadua.sprites.Sprite;
+import ru.ivanov_chkadua.sprites.*;
 
 /**
  * 
@@ -177,10 +173,13 @@ public class GameLoop{
 		block.replace(600, 0);
 		Sprite block1 = new BlockTwoStonesOneTree();
 		block1.replace(block.bounds().x + block.bounds().width + 1000, 0);
+		Sprite block2 = new BlockOfThreeSnowballs();
+		block2.replace(block1.bounds().x + block1.bounds().width + 1000, 0);
 		
 		ArrayList<Sprite> sprites = new ArrayList<>();
 		sprites.add(block);
 		sprites.add(block1);
+		sprites.add(block2);
 		
 		ArrayList<Dude> players = new ArrayList<>();
 		players.add(dude);
