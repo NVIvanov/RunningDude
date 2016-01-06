@@ -30,9 +30,9 @@ final public class GameMap extends Canvas {
 	private static GameMap instance;
 	public final static Image TREE_IMAGE = new Image(MainWindow.getDisplay(), "./img/tree.png");
 	public final static Image SNOWBALL_IMAGE = new Image(MainWindow.getDisplay(), "./img/snowball.png");
-	public final static Image STATIC_BACK = new Image(MainWindow.getDisplay(), "./img/static_back_1.png");
-	public final static Image BACK_1 = new Image(MainWindow.getDisplay(), "./img/back_1.png");
-	public final static Image BACK_2 = new Image(MainWindow.getDisplay(), "./img/back_2.png");
+	public final static Image STATIC_BACK = new Image(MainWindow.getDisplay(), "./img/static_back_1_winter.png");
+	public final static Image BACK_1 = new Image(MainWindow.getDisplay(), "./img/back_1_winter.png");
+	public final static Image BACK_2 = new Image(MainWindow.getDisplay(), "./img/back_2_winter.png");
 	private List<Sprite> objects = new ArrayList<>();
 	private Comparator<Sprite> spriteComparator = new Comparator<Sprite>(){
 		@Override
@@ -75,7 +75,7 @@ final public class GameMap extends Canvas {
 			new Image(Display.getCurrent(), "./img/roll/10.png")
 	};
 	
-	public final static Image BRANCH = new Image(Display.getCurrent(), "./img/branch.png");
+	public final static Image BRANCH = new Image(Display.getCurrent(), "./img/branch_winter.png");
 	public final static Image CLOUD = new Image(Display.getCurrent(), "./img/cloud.png");
 	
 	private static Color blue = new Color(Display.getCurrent(), 102, 204, 255);
