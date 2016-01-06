@@ -12,9 +12,9 @@ public class BlockOfThreeSnowballs extends Sprite {
                             .setRightUp(500,0)
                             .setRightDown(500,0));
 
-        addChild(new Snowball(),500);
-        addChild(new Snowball(),500);
-        addChild(new Snowball(),500);
+        addChild(new Snowball(),700);
+        addChild(new Snowball(),700);
+        addChild(new Snowball(),700);
 
         setInteractive(true);
     }

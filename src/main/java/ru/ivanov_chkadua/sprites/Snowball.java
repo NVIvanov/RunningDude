@@ -9,10 +9,9 @@ import ru.ivanov_chkadua.game.GameMap;
 public class Snowball extends Sprite {
 
     public Snowball() {
-        super(new Polygon().setLeftDown(0,0)
-                .setLeftUp(0,50)
-                .setRightDown(75,0)
-                .setRightUp(75,50), GameMap.SNOWBALL_IMAGE, false);
-        setInteractive(false);
+        super(new Polygon().setLeftDown(0,140)
+                .setLeftUp(0,190)
+                .setRightDown(75,140)
+                .setRightUp(75,190), GameMap.SNOWBALL_IMAGE, false);
     }
 }

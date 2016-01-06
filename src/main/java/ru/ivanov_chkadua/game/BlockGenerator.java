@@ -4,9 +4,7 @@ import java.util.Random;
 
 import org.eclipse.swt.graphics.Rectangle;
 
-import ru.ivanov_chkadua.sprites.BlockOfTreeTrees;
-import ru.ivanov_chkadua.sprites.BlockTwoStonesOneTree;
-import ru.ivanov_chkadua.sprites.Sprite;
+import ru.ivanov_chkadua.sprites.*;
 
 /**
  * 
@@ -61,10 +59,32 @@ final public class BlockGenerator implements Manager{
 			GameLoop.getGameLoop().removeSprite(firstBlock);
 			int rand = new Random().nextInt(100);
 			Sprite newBlock;
-			if (rand % 2 == 0)
-				newBlock = new BlockOfTreeTrees();
-			else
-				newBlock = new BlockTwoStonesOneTree();
+			switch (rand % 8) {
+				case 0:
+					newBlock = new BlockOfTreeTrees();
+					break;
+				case 1:
+					newBlock = new BlockTwoStonesOneTree();
+					break;
+				case 2:
+					newBlock = new BlockOfThreeSnowballs();
+					break;
+				case 3:
+					newBlock = new FireTreeFire();
+					break;
+				case 4:
+					newBlock = new SnowdriftFireLog();
+					break;
+				case 5:
+					newBlock = new SnowdriftSnowballSnowdrift();
+					break;
+				case 6:
+					newBlock = new ThreeFires();
+					break;
+				default:
+					newBlock = new TreeLogSnowball();
+					break;
+			}
 			newBlock.replace(lastBlockBounds.width + lastBlockBounds.x + standartOffset, 0);
 			System.out.println(rand);
 			GameLoop.getGameLoop().addSprite(newBlock);

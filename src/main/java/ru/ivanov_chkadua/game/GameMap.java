@@ -30,6 +30,8 @@ final public class GameMap extends Canvas {
 	private static GameMap instance;
 	public final static Image TREE_IMAGE = new Image(MainWindow.getDisplay(), "./img/tree.png");
 	public final static Image SNOWBALL_IMAGE = new Image(MainWindow.getDisplay(), "./img/snowball.png");
+	public final static Image FIRE_IMAGE = new Image(MainWindow.getDisplay(), "./img/fire.png");
+	public final static Image SNOWDRIFT_IMAGE = new Image(MainWindow.getDisplay(), "./img/snowdrift.png");
 	public final static Image STATIC_BACK = new Image(MainWindow.getDisplay(), "./img/static_back_1_winter.png");
 	public final static Image BACK_1 = new Image(MainWindow.getDisplay(), "./img/back_1_winter.png");
 	public final static Image BACK_2 = new Image(MainWindow.getDisplay(), "./img/back_2_winter.png");
