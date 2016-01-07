@@ -8,8 +8,7 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -72,37 +71,43 @@ public class MainWindow {
 	 * Создает главное меню игры
 	 */
 	private static void setupMainMenu() {
+		Image startNormal = new Image(Display.getCurrent(), "./img/text/standart/start.png");
+		Image easyModeNormal = new Image(Display.getCurrent(), "./img/text/standart/easy.png");
+		Image mediumModeNormal = new Image(Display.getCurrent(), "./img/text/standart/medium.png");
+		Image hardModeNormal = new Image(Display.getCurrent(), "./img/text/standart/hard.png");
+//		Image startPointed = new Image(Display.getCurrent(), "./img/text/on_point/start.png");
+//		Image easyModePointed = new Image(Display.getCurrent(), "./img/text/on_point/easy.png");
+//		Image mediumModePointed = new Image(Display.getCurrent(), "./img/text/on_point/medium.png");
+//		Image hardModePointed = new Image(Display.getCurrent(), "./img/text/on_point/hard.png");
+		Image easyModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/easy.png");
+		Image mediumModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/medium.png");
+		Image hardModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/hard.png");
+		
 		Color white = new Color(display, 255, 255, 255);
 		shell.setBackground(white);
 		
-		Font simpleFont = new Font(display, new FontData("Tahoma", 20, SWT.NORMAL));
-		Font bigFont = new Font(display, new FontData("Tahoma", 30, SWT.BOLD));
-		
 		Label start = new Label(shell, SWT.BOTTOM);
-		start.setText("НАЧАТЬ ИГРУ");
 		start.setBackground(white);
-		start.setFont(simpleFont);
+		start.setImage(startNormal);
 		GridData gridData = new GridData(SWT.CENTER, SWT.BOTTOM, true, true);
 		gridData.widthHint = SWT.DEFAULT;
 		gridData.heightHint = SWT.DEFAULT;
 		gridData.horizontalSpan = 3;
 		start.setLayoutData(gridData);
 		
+		Label easy = new Label(shell, SWT.NONE);
+		easy.setBackground(white);		
+		easy.setImage(easyModeNormal);
 		
-		Label easy = new Label(shell, SWT.FILL);
-		easy.setBackground(white);
-		easy.setText("ЛЕГКО");
-		easy.setFont(bigFont);
-		
-		Label normal = new Label(shell, SWT.FILL);
+		Label normal = new Label(shell, SWT.NONE);
 		normal.setBackground(white);
-		normal.setText("НОРМАЛЬНО");
-		normal.setFont(simpleFont);
+		normal.setImage(mediumModeNormal);
 		
-		Label hard = new Label(shell, SWT.FILL);
+		
+		Label hard = new Label(shell, SWT.NONE);
 		hard.setBackground(white);
-		hard.setText("СЛОЖНО");
-		hard.setFont(simpleFont);
+		hard.setImage(hardModeNormal);
+		
 		GridData gridData2 = new GridData(SWT.CENTER, SWT.CENTER, true, true);
 		gridData2.widthHint = SWT.DEFAULT;
 		gridData2.heightHint = SWT.DEFAULT;
@@ -116,22 +121,16 @@ public class MainWindow {
 			@Override
 			public void mouseUp(MouseEvent e) {
 				difficulty = 1;
-				easy.setFont(bigFont);
-				normal.setFont(simpleFont);
-				hard.setFont(simpleFont);
+				easy.setImage(easyModeSelected);
+				normal.setImage(mediumModeNormal);
+				hard.setImage(hardModeNormal);
 			}
 			
 			@Override
-			public void mouseDown(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseDown(MouseEvent e) {}
 			
 			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseDoubleClick(MouseEvent e) {}
 		});
 		
 		normal.addMouseListener(new MouseListener() {
@@ -139,22 +138,16 @@ public class MainWindow {
 			@Override
 			public void mouseUp(MouseEvent e) {
 				difficulty = 2;
-				easy.setFont(simpleFont);
-				normal.setFont(bigFont);
-				hard.setFont(simpleFont);
+				easy.setImage(easyModeNormal);
+				normal.setImage(mediumModeSelected);
+				hard.setImage(hardModeNormal);
 			}
 			
 			@Override
-			public void mouseDown(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseDown(MouseEvent e) {}
 			
 			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseDoubleClick(MouseEvent e) {}
 		});
 		
 		hard.addMouseListener(new MouseListener() {
@@ -162,22 +155,16 @@ public class MainWindow {
 			@Override
 			public void mouseUp(MouseEvent e) {
 				difficulty = 3;
-				easy.setFont(simpleFont);
-				normal.setFont(simpleFont);
-				hard.setFont(bigFont);
+				easy.setImage(easyModeNormal);
+				normal.setImage(mediumModeNormal);
+				hard.setImage(hardModeSelected);
 			}
+		
+			@Override
+			public void mouseDown(MouseEvent e) {}
 			
 			@Override
-			public void mouseDown(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseDoubleClick(MouseEvent e) {}
 		});
 		
 		start.addMouseListener(new MouseListener() {
@@ -203,27 +190,20 @@ public class MainWindow {
 					}
 					
 					@Override
-					public void keyPressed(KeyEvent e) {
-						// TODO Auto-generated method stub
-						
-					}
+					public void keyPressed(KeyEvent e) {}
 				});
 				GameLoop.prepareAndStartGame(difficulty);
 			}
 			
 			
 			@Override
-			public void mouseDown(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseDown(MouseEvent e) {}
 			
 			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseDoubleClick(MouseEvent e) {}
 		});
+		
+		
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 3;
 		shell.setLayout(layout);
@@ -240,21 +220,6 @@ public class MainWindow {
 					GameMap.getInstance().dispose();
 				}
 					
-			}
-		});
-		shell.addKeyListener(new KeyListener() {
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == SWT.ESC){
-					shell.setMaximized(false);
-				}
 			}
 		});
 	}

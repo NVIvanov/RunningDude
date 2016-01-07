@@ -14,10 +14,9 @@ import ru.ivanov_chkadua.game.GameMap;
  *
  */
 public class Dude extends Sprite{
-	private static final int START_SPEED_Y = 18;
-	private static final long ONE_SECOND = 1000;
+	private static final int START_SPEED_Y = 23;
 	private Command jump, run, stop, roll;
-	private int speedX, speedY, runImageIndex = 0, jumpImageIndex = 0, rollImageIndex = 0;
+	private int runImageIndex = 0, jumpImageIndex = 0, rollImageIndex = 0;
 	private boolean jumping, rolling, running;
 	private int passed = 0;
 	
@@ -29,6 +28,8 @@ public class Dude extends Sprite{
 		super(new Rectangle(0, 0, 85, 175), GameMap.DUDE_RUN[0], false);
 		
 		setZLevel(0.99);
+		setWeightRatio(1);	
+		
 		//Implementing base commands
 		jump = new Command(){
 
@@ -36,24 +37,20 @@ public class Dude extends Sprite{
 			public void execute() {
 				if (rolling || jumping || !isRunning())
 					return;
-				speedY = Dude.START_SPEED_Y;
+				YSpeed = Dude.START_SPEED_Y;
 				jumping = true;
 				TimerTask jump = new TimerTask(){
 
 					@Override
 					public void run() {
-						replace(0, speedY);
-						speedY -= 1;
-						if (onGroundLevel()){
-							cancel();
+						if (onGroundLevel() && YSpeed == 0){
 							jumping = false;
-							alignLevel();
-							speedY = 0;
-						}						
+							cancel();
+						}
 					}
 					
 				};
-				new Timer().schedule(jump, 0, Dude.ONE_SECOND / 75);
+				new Timer().schedule(jump, 25, 17);
 				
 				new Timer().schedule(new TimerTask() {
 					
@@ -66,7 +63,7 @@ public class Dude extends Sprite{
 							cancel();
 						}
 					}
-				}, 0, 80);
+				}, 0, 160);
 			}
 			
 		};
@@ -78,22 +75,7 @@ public class Dude extends Sprite{
 				if (isRunning())
 					return;
 				running = true;
-				speedX = 7;
-				TimerTask run = new TimerTask(){
-
-					@Override
-					public void run() {
-						if (speedX <= 0){
-							cancel();
-							running = false;
-						}else{
-							replace(speedX, 0);
-							passed += speedX;
-						}						
-					}
-					
-				};
-				new Timer().schedule(run, 0, Dude.ONE_SECOND / 100);
+				XSpeed = 18;
 				
 				new Timer().schedule(new TimerTask() {
 					
@@ -105,7 +87,7 @@ public class Dude extends Sprite{
 							cancel();
 						}
 					}
-				}, 0, 100);
+				}, 0, 80);
 			}
 			
 		};
@@ -114,8 +96,8 @@ public class Dude extends Sprite{
 
 			@Override
 			public void execute() {
-				speedX = 0;
-				speedY = 0;
+				XSpeed = 0;
+				YSpeed = 0;
 			}
 			
 		};
@@ -153,7 +135,8 @@ public class Dude extends Sprite{
 					@Override
 					public void run() {
 						moveUpPoints(50);
-						rolling = false;					
+						rolling = false;
+						rollImageIndex = 0;
 					}
 					
 				};
@@ -178,9 +161,17 @@ public class Dude extends Sprite{
 			}
 			
 		};
-		
-		
 	}
+	
+	@Override
+	public void move() {
+		super.move();
+		if (XSpeed <= 0)
+			running = false;
+		else
+			passed += XSpeed;
+	}
+	
 
 	/**
 	 * Вызвать команду прыжка
@@ -219,11 +210,11 @@ public class Dude extends Sprite{
 
 			@Override
 			public void run() {
-				if (speedX <= 0){
+				if (XSpeed <= 0){
 					cancel();
 					return;
 				}
-				speedX += a;
+				XSpeed += a;
 			}
 			
 		}, 0, 6000);

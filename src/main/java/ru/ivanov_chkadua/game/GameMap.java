@@ -105,38 +105,52 @@ final public class GameMap extends Canvas {
 		addPaintListener(new PaintListener() {
 			@Override
 			public void paintControl(PaintEvent e) {
-				
+				paintBackground(e);			
+				paintSprites(e);
+				showStaticElements(e);
+			}
+
+			private void paintBackground(PaintEvent e) {
 				e.gc.setBackground(blue);
 				e.gc.setAdvanced(true);
 				e.gc.setInterpolation(SWT.HIGH);
 				e.gc.fillRectangle(0, 0, MainWindow.getShell().getSize().x, MainWindow.getShell().getSize().y - 180);
-				
-				Font font = new Font(MainWindow.getDisplay(), new FontData("Tahoma", 20, SWT.NORMAL));
-				Color gold = new Color(MainWindow.getDisplay(), 255, 204, 0);
-				e.gc.setForeground(gold);
-				e.gc.setFont(font);
-				
-				String str;
-				if (userRecord == 0)
-					str = "SCORE : " + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
-				else
-					str = "SCORE : " + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10 + " RECORD : " + userRecord;
-				e.gc.drawText(str, 30, 30);
-				
+			}
+
+			private void paintSprites(PaintEvent e) {
 				Transform tr = new Transform(Display.getCurrent());
 				tr.setElements(1, 0, 0, -1, 0, 0);		
 				tr.translate(0, - MainWindow.getShell().getBounds().height + 150);
 				e.gc.setTransform(tr);
-				
 				for (int i = 0; i < objects.size(); i++){
 					if (objects.get(i).bounds().x + objects.get(i).bounds().width < -300 && !(objects.get(i) instanceof Dude))
 						GameLoop.getGameLoop().removeSprite(objects.get(i));
 					else
 						objects.get(i).paint(e);
 				}
-					
-				
 				tr.dispose();
+			}
+
+			private void showStaticElements(PaintEvent e) {
+				e.gc.setTransform(null);
+				
+				Font font = new Font(MainWindow.getDisplay(), new FontData("Tahoma", 20, SWT.NORMAL));
+				Color gold = new Color(MainWindow.getDisplay(), 255, 204, 0);
+				e.gc.setForeground(gold);
+				e.gc.setFont(font);	
+				
+				String str;
+				if (userRecord == 0)
+					str = "SCORE : " + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
+				else
+					str = "SCORE : " + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10 + " RECORD : " + userRecord;
+				e.gc.drawText(str, 30, 30, true);
+				if (GameLoop.getGameLoop().isPause())
+					e.gc.drawText("PAUSE", 600, 400, true);
+				if (!GameLoop.getGameLoop().isAlive() && !GameLoop.getGameLoop().isPause())
+					e.gc.drawText("GAMEOVER", 300, 300, true);
+				
+				
 				font.dispose();
 				gold.dispose();
 			}

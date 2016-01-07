@@ -28,20 +28,8 @@ final public class CloudManager implements Manager {
 						int x = 2000;
 						Cloud cloud = new Cloud();
 						cloud.setZLevel(1.5);
-						cloud.execute(new Command() {
-							
-							@Override
-							public void execute() {
-								new Timer().schedule(new TimerTask() {
-									
-									@Override
-									public void run() {
-										cloud.replace(-4, 0);
-									}
-								}, 200, new Random().nextInt(100) + 20);
-							}
-						});
 						cloud.replace(x, height);
+						cloud.setXSpeed(-7);
 						GameLoop.getGameLoop().addSprite(cloud);
 
 					}

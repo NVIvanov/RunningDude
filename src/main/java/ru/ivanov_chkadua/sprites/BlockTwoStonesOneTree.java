@@ -14,7 +14,7 @@ public class BlockTwoStonesOneTree extends Sprite{
 		addChild(new FloatBranch(), 250);
 		addChild(new TreeWithBranchSprite(), -200);
 		addChild(new TreeSprite(), 900);
-		addChild(new FloatBranch(), 1050);
+		addChild(new FloatBranch(), 1100);
 		addChild(new TreeWithBranchSprite(), -200);
 		setInteractive(true);
 	}

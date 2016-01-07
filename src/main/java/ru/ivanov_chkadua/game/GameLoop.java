@@ -6,12 +6,19 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.prefs.Preferences;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Display;
 
 import ru.ivanov_chkadua.game.ui.MainWindow;
-import ru.ivanov_chkadua.sprites.*;
+import ru.ivanov_chkadua.sprites.Back;
+import ru.ivanov_chkadua.sprites.BlockOfThreeSnowballs;
+import ru.ivanov_chkadua.sprites.BlockOfTreeTrees;
+import ru.ivanov_chkadua.sprites.BlockTwoStonesOneTree;
+import ru.ivanov_chkadua.sprites.Dude;
+import ru.ivanov_chkadua.sprites.Sprite;
 
 /**
  * 
@@ -26,6 +33,8 @@ public class GameLoop{
 	private List<Back> backgrounds;
 	private ArrayList<Manager> managers;
 	private boolean alive = true;
+	private boolean pause = false;
+	private static KeyListener mainListener;
 
 	private GameLoop(){
 		managers = new ArrayList<>();
@@ -87,7 +96,7 @@ public class GameLoop{
 	 * Возвращает список игроков, можно использовать в менеджерах.
 	 * @return
 	 */
-	final public List<Dude> getPlayers(){
+	synchronized final public List<Dude> getPlayers(){
 		return players;
 	}
 	
@@ -95,7 +104,7 @@ public class GameLoop{
 	 * Возвращает список декораций и препятствий, можно использовать в менеджерах
 	 * @return
 	 */
-	final public List<Sprite> getSprites(){
+	synchronized final public List<Sprite> getSprites(){
 		return sprites;
 	}
 	
@@ -131,6 +140,7 @@ public class GameLoop{
 			@Override
 			public void run() {
 				if (alive){
+					moveSprites();
 					for (Manager manager : managers)
 						manager.manage();
 					GameMap.getInstance().redraw();
@@ -141,17 +151,44 @@ public class GameLoop{
 		});
 	}
 	
+	final public void pause(){
+		pause = true;
+		alive = false;
+	}
+	
+	final public void resume(){
+		start();
+		pause = false;
+	}
+	
+	
+	public boolean isPause() {
+		return pause;
+	}
+
+	final private void moveSprites(){
+		for (Sprite player:players)
+			player.move();
+		for (Sprite sprite:sprites)
+			sprite.move();
+	}
+	
 	/**
 	 * Останавливает игровой цикл. Проверяет достигнут ли игроком новый рекорд.
 	 */
 	final public void stop(){
 		alive = false;
-		
+		saveScore();
+		MainWindow.getShell().removeKeyListener(mainListener);
+	}
+
+	private void saveScore() {
 		int score = getPlayers().get(0).getPassed() / 10;
 		int record = Preferences.userRoot().node("dudescore").getInt("score", 0);
 		if (score > record)
 			Preferences.userRoot().node("dudescore").putInt("score", score);
 	}
+	
 	
 	/**
 	 * 
@@ -216,7 +253,7 @@ public class GameLoop{
 			}
 		}, 3000);
 		
-		MainWindow.getShell().addKeyListener(new KeyAdapter(){
+		mainListener = new KeyAdapter(){
 
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -227,10 +264,16 @@ public class GameLoop{
 				case 0x1000002:
 					dude.roll();
 					break;
+				case SWT.ESC:
+					if (!GameLoop.getGameLoop().isPause())
+						GameLoop.getGameLoop().pause();
+					else
+						GameLoop.getGameLoop().resume();
+					break;
 				}
 			}
-		});
-		
+		};
+		MainWindow.getShell().addKeyListener(mainListener);		
 		MainWindow.getShell().layout();
 	}
 	
@@ -247,7 +290,7 @@ public class GameLoop{
 	 * Возвращает список фонов
 	 * @return список фонов
 	 */
-	final public List<Back> getBackgrounds() {
+	synchronized final public List<Back> getBackgrounds() {
 		return backgrounds;
 	}
 }

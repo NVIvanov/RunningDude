@@ -2,6 +2,7 @@ package ru.ivanov_chkadua.sprites;
 
 import java.util.ArrayList;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -24,8 +25,13 @@ public class Sprite implements Executor{
 	private boolean interactive = false;
 	private boolean movable = true;
 	private boolean drawable = true;
+	private boolean bounce = false;
 	private double ZLevel = 1;
-	
+	private int lostSpeed = 0;
+	protected double XSpeed = 0;
+	protected double YSpeed = 0;
+	private double weightRatio = 0;
+
 	/**
 	 * Конструктор с указанием ужатия изображения
 	 * @param placement полигон спрайта
@@ -87,12 +93,17 @@ public class Sprite implements Executor{
 			if (img == null){
 				paintStandartFigure(e);
 			}else
-				if (!MainWindow.getDisplay().isDisposed())
+				if (!MainWindow.getDisplay().isDisposed()){
+					e.gc.setAdvanced(true);
+					e.gc.setInterpolation(SWT.HIGH);
+					e.gc.setAntialias(SWT.ON);
 					if (changeImageSize)
 						e.gc.drawImage(img, 0, 0, img.getImageData().width, img.getImageData().height,
 								placement.x, placement.y, placement.width, placement.height);
 					else
 						e.gc.drawImage(img, placement.x, placement.y);
+				}
+					
 		}	
 	}
 	
@@ -208,7 +219,7 @@ public class Sprite implements Executor{
 	}
 
 	/**
-	 * 
+	 * Определяет, можно ли взаимодействовать с объектом
 	 * @return true, если с объектом можно взаимодействовать, например если это препятствие.
 	 */
 	final public boolean isInteractive() {
@@ -216,7 +227,7 @@ public class Sprite implements Executor{
 	}
 
 	/**
-	 * Устанавливает, можно ли взаимодействовать с объектом
+	 * Устанавливает, можно ли взаимодействовать с объектом. По-умолчанию взаимодействия с объектом нет.
 	 * @param interactive
 	 */
 	final public void setInteractive(boolean interactive) {
@@ -232,7 +243,7 @@ public class Sprite implements Executor{
 	}
 
 	/**
-	 * Устанавливает, учитывается ли объект камерой
+	 * Устанавливает, учитывается ли объект камерой. По-умолчанию объект учитывается камерой.
 	 * @param movable
 	 */
 	final public void setMovable(boolean movable) {
@@ -256,5 +267,58 @@ public class Sprite implements Executor{
 		if (ZLevel == 0)
 			throw new IllegalArgumentException("Уровень дальности по Z не должен равняться 0");
 		ZLevel = zLevel;
+	}
+
+	/**
+	 * Устанавливает скорость в горизонтальном направлении
+	 * @param value величина, на которую переместится спрайт
+	 */
+	final public void setXSpeed(int value){
+		XSpeed = value;
+	}
+	
+	/**
+	 * Устанавливает скорость в вертикальном направлении. После каждой итерации в игровом цикле
+	 * скорость будет уменьшаться на 2 * весовой коэффициент. См. <code>setWeightRatio</code>
+	 * @param value величина, на которую переместится спрайт
+	 */
+	final public void setYSpeed(int value){
+		YSpeed = value;
+	}
+	
+	/**
+	 * Устанавливает весовой коэффициент для данного объекта. При значении равном 1 скорость по вертикали будет убывать на 2
+	 * с каждой итерацией игрового цикла. Чтобы сделать объект невесомым, нужно установить значение 0.
+	 * @param weightRatio
+	 */
+	public void setWeightRatio(double weightRatio) {
+		this.weightRatio = weightRatio;
+	}
+	
+	/**
+	 * Перемещает спрайт в зависимости от установленной скорости.
+	 */
+	public void move(){
+		placement.x += XSpeed;
+		placement.y += YSpeed;
+		if (onGroundLevel()){
+			alignLevel();
+			if (bounce){
+				YSpeed = -YSpeed - lostSpeed;
+			}else
+				YSpeed = 0;	
+		}else
+			YSpeed -= 2 * weightRatio;
+	}
+	
+	/**
+	 * Включает сохранение импульса. При падении на землю объект будет отскакивать и абсолютная скорость будет уменьшаться на указанную величину.
+	 * По-умолчанию сохранение импульса выключено.
+	 * @param bounce вкл/выкл режима сохранения импульса
+	 * @param lostSpeed величина, на которую будет уменьшаться абсолютная скорость при падении.
+	 */
+	public void setBounce(boolean bounce, int lostSpeed){
+		this.bounce = bounce;
+		this.lostSpeed = lostSpeed;
 	}
 }

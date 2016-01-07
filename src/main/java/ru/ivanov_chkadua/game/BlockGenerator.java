@@ -30,13 +30,13 @@ final public class BlockGenerator implements Manager{
 	private void setOffset(int level){
 		switch(level){
 		case 1:
-			standartOffset = 2000;
+			standartOffset = 1500;
 			break;
 		case 2:
-			standartOffset = 1000;
+			standartOffset = 700;
 			break;
 		case 3:
-			standartOffset = 500;
+			standartOffset = 300;
 			break;
 		default:
 			throw new IllegalArgumentException("Неподдерживаемый уровень сложности");
@@ -86,7 +86,6 @@ final public class BlockGenerator implements Manager{
 					break;
 			}
 			newBlock.replace(lastBlockBounds.width + lastBlockBounds.x + standartOffset, 0);
-			System.out.println(rand);
 			GameLoop.getGameLoop().addSprite(newBlock);
 		}
 	}

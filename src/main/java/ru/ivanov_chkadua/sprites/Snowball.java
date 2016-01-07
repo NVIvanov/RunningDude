@@ -13,5 +13,6 @@ public class Snowball extends Sprite {
     public Snowball() {
         super(new Rectangle(0, 140, 75, 50), GameMap.SNOWBALL_IMAGE, false);
         setInteractive(true);
+        setXSpeed(-10);
     }
 }
