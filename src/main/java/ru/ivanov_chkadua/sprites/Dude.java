@@ -3,6 +3,8 @@ package ru.ivanov_chkadua.sprites;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.eclipse.swt.graphics.Rectangle;
+
 import ru.ivanov_chkadua.game.Command;
 import ru.ivanov_chkadua.game.GameMap;
 
@@ -19,19 +21,12 @@ public class Dude extends Sprite{
 	private boolean jumping, rolling, running;
 	private int passed = 0;
 	
-	
 
 	/**
 	 * Инициализирует игрока как спрайт и внедряет команды бега, остановки, прыжка и кувырка
 	 */
 	public Dude(){
-		
-		
-		super(new Polygon()
-				.setLeftDown(0, 0)
-				.setLeftUp(0, 175)
-				.setRightDown(85, 0)
-				.setRightUp(85, 175), GameMap.DUDE_RUN[0], false);
+		super(new Rectangle(0, 0, 85, 175), GameMap.DUDE_RUN[0], false);
 		
 		setZLevel(0.99);
 		//Implementing base commands

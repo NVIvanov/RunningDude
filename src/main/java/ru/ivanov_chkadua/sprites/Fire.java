@@ -1,5 +1,7 @@
 package ru.ivanov_chkadua.sprites;
 
+import org.eclipse.swt.graphics.Rectangle;
+
 import ru.ivanov_chkadua.game.GameMap;
 
 /**
@@ -8,9 +10,7 @@ import ru.ivanov_chkadua.game.GameMap;
  */
 public class Fire extends Sprite{
     public Fire() {
-        super(new Polygon().setLeftDown(0,0)
-                .setLeftUp(0,60)
-                .setRightDown(55,0)
-                .setRightUp(55,60),GameMap.FIRE_IMAGE, false);
+        super(new Rectangle(0, 0, 55, 60),GameMap.FIRE_IMAGE, false);
+        setInteractive(true);
     }
 }

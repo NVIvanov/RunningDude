@@ -1,5 +1,7 @@
 package ru.ivanov_chkadua.sprites;
 
+import org.eclipse.swt.graphics.Rectangle;
+
 import ru.ivanov_chkadua.game.GameMap;
 
 /**
@@ -9,9 +11,7 @@ import ru.ivanov_chkadua.game.GameMap;
 
 public class Snowdrift extends Sprite {
     public Snowdrift() {
-        super(new Polygon().setLeftDown(0,0)
-            .setLeftUp(0,60)
-            .setRightDown(75,0)
-            .setRightUp(75,60), GameMap.SNOWDRIFT_IMAGE, false);
+        super(new Rectangle(0, 0, 75, 60), GameMap.SNOWDRIFT_IMAGE, false);
+        setInteractive(true);
     }
 }

@@ -1,5 +1,7 @@
 package ru.ivanov_chkadua.sprites;
 
+import org.eclipse.swt.graphics.Rectangle;
+
 /**
  * Плавающая ветка (препятствие)
  * @author n_ivanov
@@ -8,12 +10,9 @@ package ru.ivanov_chkadua.sprites;
 public class FloatBranch extends Sprite {
 
 	public FloatBranch() {
-		super(new Polygon()
-				.setLeftDown(0, 150)
-				.setLeftUp(0, 400)
-				.setRightDown(65, 150)
-				.setRightUp(65, 400));
+		super(new Rectangle(0, 150, 65, 250));
 		setIsDrawable(false);
+		setInteractive(true);
 	}
 
 }

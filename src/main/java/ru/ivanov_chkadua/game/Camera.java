@@ -16,7 +16,7 @@ public class Camera implements Manager {
 	 */
 	@Override
 	public void manage() {
-		x = spy != null ? spy.placement.leftUp.x -100 : 0;
+		x = spy != null ? spy.bounds().x -100 : 0;
 		
 		for (Sprite sprite: GameLoop.getGameLoop().getSprites()){
 			if (sprite.isMovable())

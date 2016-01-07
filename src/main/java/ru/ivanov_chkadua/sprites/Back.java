@@ -1,6 +1,7 @@
 package ru.ivanov_chkadua.sprites;
 
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 /**
  * Фон
  * @author n_ivanov
@@ -8,16 +9,18 @@ import org.eclipse.swt.graphics.Image;
  */
 public class Back extends Sprite {
 
+	final static private int DEFAULT_Y_OFFSET = 20;
+	final static private double DEFAULT_SCALE_RATIO = 0.75;
 	/**
 	 * Создает фон по расположению рядом с предыдущим
 	 * @param prev предыдущий фон
 	 * @param img изображение для отображения фона
 	 */
 	public Back(Sprite prev, Image img) {
-		super(new Polygon().setLeftDown(prev.placement.rightDown.x, 20)
-				.setLeftUp(prev.placement.rightDown.x, img.getImageData().height * 3 / 4 + 20)
-				.setRightDown(prev.placement.rightDown.x + img.getImageData().width * 3 / 4, 20)
-				.setRightUp(prev.placement.rightDown.x + img.getImageData().width * 3 / 4, img.getImageData().height * 3 / 4 + 20), img);
+		super(new Rectangle(prev.bounds().x + prev.bounds().width, 
+				DEFAULT_Y_OFFSET,
+				(int)(img.getImageData().width * DEFAULT_SCALE_RATIO),
+				(int)(img.getImageData().height * DEFAULT_SCALE_RATIO)), img);
 		setZLevel(2);
 	}
 	
@@ -26,10 +29,10 @@ public class Back extends Sprite {
 	 * @param img изображение для отображение фона
 	 */
 	public Back(Image img){
-		super(new Polygon().setLeftDown(0, 20)
-				.setLeftUp(0, img.getImageData().height * 3 / 4 + 20)
-				.setRightDown(img.getImageData().width * 3 / 4 , 20)
-				.setRightUp(img.getImageData().width * 3 / 4, img.getImageData().height * 3 / 4 + 20), img);
+		super(new Rectangle(0,
+				DEFAULT_Y_OFFSET,
+				(int)(img.getImageData().width * DEFAULT_SCALE_RATIO),
+				(int)(img.getImageData().height * DEFAULT_SCALE_RATIO)), img);
 		setZLevel(2);
 	}
 

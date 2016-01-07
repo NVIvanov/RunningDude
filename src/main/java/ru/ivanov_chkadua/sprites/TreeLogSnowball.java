@@ -1,15 +1,14 @@
 package ru.ivanov_chkadua.sprites;
 
+import org.eclipse.swt.graphics.Rectangle;
+
 /**
  * @author Anton_Chkadua
  * Блок из дерева с шипованной веткой, бревна и снежка
  */
 public class TreeLogSnowball extends Sprite {
     public TreeLogSnowball() {
-        super(new Polygon().setLeftUp(0,0)
-            .setLeftDown(0,0)
-            .setRightUp(500,0)
-            .setRightDown(500,0));
+        super(new Rectangle(0, 0, 500, 0));
 
         addChild(new FloatBranch(), 300);
         addChild(new TreeWithBranchSprite(), -200);

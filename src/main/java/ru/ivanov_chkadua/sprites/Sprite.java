@@ -17,11 +17,11 @@ import ru.ivanov_chkadua.game.ui.MainWindow;
  *
  */
 public class Sprite implements Executor{
-	public Polygon placement;
+	private Rectangle placement;
 	private ArrayList<Sprite> childs;
 	protected Image img;
-	private boolean changeImageSize;
-	private boolean interactive;
+	private boolean changeImageSize = true;
+	private boolean interactive = false;
 	private boolean movable = true;
 	private boolean drawable = true;
 	private double ZLevel = 1;
@@ -32,9 +32,9 @@ public class Sprite implements Executor{
 	 * @param img изображение для отображения спрайта
 	 * @param changeImageSize если true, изображение будет сжато до размера полигона, false - изображение будет отображаться в натуральную величину
 	 */
-	public Sprite(Polygon placement, Image img, boolean changeImageSize){
+	public Sprite(Rectangle placement, Image img, boolean changeImageSize){
 		childs = new ArrayList<>();
-		this.placement = new Polygon(placement);
+		this.placement = placement;
 		this.img = img;
 		this.changeImageSize = changeImageSize;
 	}
@@ -44,7 +44,7 @@ public class Sprite implements Executor{
 	 * @param placement полигон спрайта
 	 * @param img изображение для отображения, по умолчанию будет сжато до размеров полигона.
 	 */
-	public Sprite(Polygon placement, Image img) {
+	public Sprite(Rectangle placement, Image img) {
 		this(placement, img, true);
 	}
 	
@@ -52,7 +52,7 @@ public class Sprite implements Executor{
 	 * Конструктор с без указания изображения. Отрисовка будет происходит по правилам, определенным в методе {@link #paintStandartFigure(PaintEvent) paintStandartFigure}
 	 * @param placement полигон спрайта
 	 */
-	public Sprite(Polygon placement){
+	public Sprite(Rectangle placement){
 		this(placement, null);
 	}
 	
@@ -64,9 +64,9 @@ public class Sprite implements Executor{
 	 */
 	final public void addChild(Sprite sprite, int offsetX){
 		if (childs.size() == 0)
-			sprite.replace(placement.leftDown.x + offsetX, 0);
+			sprite.replace(placement.x + offsetX, 0);
 		else
-			sprite.replace(childs.get(childs.size() - 1).placement.rightDown.x + offsetX, 0);
+			sprite.replace(childs.get(childs.size() - 1).placement.x + offsetX, 0);
 		childs.add(sprite);
 	}
 	
@@ -89,9 +89,10 @@ public class Sprite implements Executor{
 			}else
 				if (!MainWindow.getDisplay().isDisposed())
 					if (changeImageSize)
-						e.gc.drawImage(img, 0, 0, img.getImageData().width, img.getImageData().height, placement.leftDown.x, placement.leftDown.y, placement.rightDown.x - placement.leftDown.x, placement.rightUp.y - placement.rightDown.y);
+						e.gc.drawImage(img, 0, 0, img.getImageData().width, img.getImageData().height,
+								placement.x, placement.y, placement.width, placement.height);
 					else
-						e.gc.drawImage(img, placement.leftDown.x, placement.leftDown.y);
+						e.gc.drawImage(img, placement.x, placement.y);
 		}	
 	}
 	
@@ -100,9 +101,9 @@ public class Sprite implements Executor{
 	 * @param e
 	 */
 	protected void paintStandartFigure(PaintEvent e){
-		Rectangle rect = new Rectangle(placement.leftDown.x, placement.leftDown.y, 
-				placement.rightDown.x - placement.leftDown.x,
-				placement.leftUp.y - placement.leftDown.y);
+		Rectangle rect = new Rectangle(placement.x, placement.y, 
+				placement.width,
+				placement.height);
 		Color color = new Color(null, 255,255,255);
 		e.gc.setBackground(color);
 		e.gc.fillRectangle(rect);
@@ -124,10 +125,10 @@ public class Sprite implements Executor{
 	 */
 	final public boolean overlaps(Sprite other){
 		if (childs.size() == 0)
-			return placement.overlaps(other.placement);
+			return placement.intersects(other.placement);
 		boolean overlaps = false;
 		for (Sprite child : childs)
-			if (child.overlaps(other))
+			if (child.overlaps(other) && child.isInteractive())
 				overlaps = true;
 		return overlaps;
 	}
@@ -137,8 +138,9 @@ public class Sprite implements Executor{
 	 * @param x
 	 * @param y
 	 */
-	final synchronized public void replace(int x, int y){
-		placement.replace(x, y);
+	final public void replace(int x, int y){
+		placement.x += x;
+		placement.y += y;
 		for (Sprite child:childs)
 			child.replace(x, y);
 	}
@@ -148,14 +150,14 @@ public class Sprite implements Executor{
 	 * @return
 	 */
 	final protected boolean onGroundLevel(){
-		return placement.onGroundLevel();
+		return placement.y <= 0;
 	}
 	
 	/**
 	 * Перемещает спрайт на уровень земли
 	 */
 	final protected void alignLevel(){
-		placement.alignLevel();
+		placement.y = 0;
 	}
 	
 	/**
@@ -163,7 +165,7 @@ public class Sprite implements Executor{
 	 * @param y
 	 */
 	final synchronized protected void moveUpPoints(double y){
-		placement.moveUpPoints(y);
+		placement.height += y;
 		for (Sprite child : childs)
 			child.moveUpPoints(y);
 	}
@@ -173,7 +175,7 @@ public class Sprite implements Executor{
 	 * @param x
 	 */
 	final synchronized protected void moveRightPoints(double x){
-		placement.moveRightPoints(x);
+		placement.width += x;
 		for (Sprite child: childs)
 			child.moveRightPoints(x);
 	}
@@ -183,15 +185,13 @@ public class Sprite implements Executor{
 	 * @return объект {@link Rectangle}
 	 */
 	final public Rectangle bounds(){
-		Rectangle rect;
 		if (childs.size() == 0)
-			rect = new Rectangle(placement.leftDown.x, placement.leftDown.y, placement.rightDown.x - placement.leftDown.x, placement.rightUp.y - placement.leftUp.y);
+			return placement;
 		else{
 			Rectangle first = childs.get(0).bounds();
 			Rectangle last = childs.get(childs.size() - 1).bounds();
-			rect = new Rectangle(first.x, first.y, last.x + last.width - first.x, last.height);
+			return new Rectangle(first.x, first.y, last.x + last.width - first.x, last.height);
 		}
-		return rect;
 	}
 	
 	@Override
