@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="ru.ivanov_chkadua.sprites.SpriteTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2016-01-07T13:37:57" hostname="localhost" time="0.22">
+<testsuite name="ru.ivanov_chkadua.sprites.SpriteTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2016-01-08T17:09:48" hostname="localhost" time="0.299">
   <properties/>
-  <testcase name="spriteShouldOverlap" classname="ru.ivanov_chkadua.sprites.SpriteTest" time="0.22">
+  <testcase name="spriteShouldOverlap" classname="ru.ivanov_chkadua.sprites.SpriteTest" time="0.299">
     <failure message="java.lang.AssertionError" type="java.lang.AssertionError">java.lang.AssertionError
 	at org.junit.Assert.fail(Assert.java:86)
 	at org.junit.Assert.assertTrue(Assert.java:41)

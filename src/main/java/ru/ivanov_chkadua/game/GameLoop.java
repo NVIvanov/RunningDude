@@ -154,11 +154,13 @@ public class GameLoop{
 	final public void pause(){
 		pause = true;
 		alive = false;
+		MainWindow.getShell().removeKeyListener(mainListener);
 	}
 	
 	final public void resume(){
 		start();
 		pause = false;
+		MainWindow.getShell().addKeyListener(mainListener);
 	}
 	
 	
@@ -264,6 +266,14 @@ public class GameLoop{
 				case 0x1000002:
 					dude.roll();
 					break;
+				}
+			}
+		};
+		MainWindow.getShell().addKeyListener(mainListener);
+		MainWindow.getShell().addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				switch (e.keyCode){
 				case SWT.ESC:
 					if (!GameLoop.getGameLoop().isPause())
 						GameLoop.getGameLoop().pause();
@@ -272,8 +282,7 @@ public class GameLoop{
 					break;
 				}
 			}
-		};
-		MainWindow.getShell().addKeyListener(mainListener);		
+		});
 		MainWindow.getShell().layout();
 	}
 	

@@ -98,6 +98,7 @@ public class Dude extends Sprite{
 			public void execute() {
 				XSpeed = 0;
 				YSpeed = 0;
+				running = false;
 			}
 			
 		};

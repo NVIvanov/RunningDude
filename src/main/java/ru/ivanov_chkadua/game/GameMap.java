@@ -79,6 +79,8 @@ final public class GameMap extends Canvas {
 	
 	public final static Image BRANCH = new Image(Display.getCurrent(), "./img/branch_winter.png");
 	public final static Image CLOUD = new Image(Display.getCurrent(), "./img/cloud.png");
+	private final static Image PAUSE = new Image(Display.getCurrent(), "./img/text/standart/pause.png");
+	private final static Image GAME_OVER = new Image(Display.getCurrent(), "./img/game_over_shell.png");
 	
 	private static Color blue = new Color(Display.getCurrent(), 102, 204, 255);
 	public static Color red = new Color(Display.getCurrent(), 255, 0, 0);
@@ -132,27 +134,70 @@ final public class GameMap extends Canvas {
 			}
 
 			private void showStaticElements(PaintEvent e) {
-				e.gc.setTransform(null);
 				
+				//Подготовка графического контекста
+				e.gc.setTransform(null);
 				Font font = new Font(MainWindow.getDisplay(), new FontData("Tahoma", 20, SWT.NORMAL));
 				Color gold = new Color(MainWindow.getDisplay(), 255, 204, 0);
 				e.gc.setForeground(gold);
 				e.gc.setFont(font);	
 				
-				String str;
-				if (userRecord == 0)
-					str = "SCORE : " + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
-				else
-					str = "SCORE : " + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10 + " RECORD : " + userRecord;
-				e.gc.drawText(str, 30, 30, true);
-				if (GameLoop.getGameLoop().isPause())
-					e.gc.drawText("PAUSE", 600, 400, true);
-				if (!GameLoop.getGameLoop().isAlive() && !GameLoop.getGameLoop().isPause())
-					e.gc.drawText("GAMEOVER", 300, 300, true);
+				//Отрисовка текущего счета и рекорда
+				if (GameLoop.getGameLoop().isAlive() || GameLoop.getGameLoop().isPause()){
+					String str;
+					if (userRecord == 0)
+						str = "СЧЁТ : " + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
+					else
+						str = "СЧЁТ : " + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10 + " РЕКОРД : " + userRecord;
+					e.gc.drawText(str, 30, 30, true);
+				}
+				
+				//Отрисовка сообщения о паузе
+				if (GameLoop.getGameLoop().isPause()){
+					int pauseMessageImageWidth = PAUSE.getImageData().width;
+					int pauseMessageImageHeight = PAUSE.getImageData().height;
+					e.gc.drawImage(PAUSE, (GameMap.this.getBounds().width - pauseMessageImageWidth) / 2,
+							(GameMap.this.getBounds().height - pauseMessageImageHeight) / 2);
+				}
+				
+				//Отрисовка окна окончания игры
+				if (!GameLoop.getGameLoop().isAlive() && !GameLoop.getGameLoop().isPause()){
+					drawFieldForMessages(e);
+					
+					String scoreMessage = getScoreMessage();
+					int scoreMessageLength = e.gc.textExtent(scoreMessage).x;
+					e.gc.drawText(scoreMessage, (GameMap.this.getBounds().width - scoreMessageLength) / 2,
+							GameMap.this.getBounds().height / 2 - e.gc.textExtent(scoreMessage).y - 10, true);
+					
+					drawGameOverMessage(e);
+				}
 				
 				
 				font.dispose();
 				gold.dispose();
+			}
+
+			private void drawGameOverMessage(PaintEvent e) {
+				int gameOverMessageWidth = e.gc.textExtent("КОНЕЦ ИГРЫ").x;
+				e.gc.drawText("КОНЕЦ ИГРЫ", (GameMap.this.getBounds().width - gameOverMessageWidth) / 2,
+						GameMap.this.getBounds().height / 2, true);
+			}
+
+			private String getScoreMessage() {
+				int currentScore = GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
+				StringBuilder scoreMessage = new StringBuilder("СЧЕТ: " + currentScore);
+				if (currentScore <= userRecord)
+					scoreMessage.append(" РЕКОРД: " + userRecord);
+				else
+					scoreMessage.append(" НОВЫЙ РЕКОРД!");
+				return scoreMessage.toString();
+			}
+
+			private void drawFieldForMessages(PaintEvent e) {
+				int gameOverMessageImageWidth = GAME_OVER.getImageData().width;
+				int gameOverMessageImageHeight = GAME_OVER.getImageData().height;
+				e.gc.drawImage(GAME_OVER, (GameMap.this.getBounds().width - gameOverMessageImageWidth) / 2,
+						(GameMap.this.getBounds().height - gameOverMessageImageHeight) / 2);
 			}
 		});
 		
@@ -192,6 +237,7 @@ final public class GameMap extends Canvas {
 			DUDE_JUMP[i].dispose();
 		BRANCH.dispose();
 		CLOUD.dispose();
+		PAUSE.dispose();
 		red.dispose();
 	}
 	
