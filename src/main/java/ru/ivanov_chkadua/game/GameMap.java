@@ -3,6 +3,8 @@ package ru.ivanov_chkadua.game;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.prefs.Preferences;
 
 import org.eclipse.swt.SWT;
@@ -12,6 +14,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
@@ -26,6 +29,9 @@ import ru.ivanov_chkadua.sprites.Sprite;
  *
  */
 final public class GameMap extends Canvas {
+	private static final String GAME_OVER_MESSAGE = "КОНЕЦ ИГРЫ";
+	private static final String NEW_GAME_HINT = "Нажмите Enter, чтобы начать заново.";
+	private static final int DEFAULT_GROUND_HEIGHT = 180;
 	private static final String INIT_MAP_USING_NULL_LISTS = "Инициализация карты проводится на основе объектов игрового цикла, вызывайте инициализацию после добавления объектов в игровой цикл";
 	private static GameMap instance;
 	public final static Image TREE_IMAGE = new Image(MainWindow.getDisplay(), "./img/tree.png");
@@ -83,8 +89,10 @@ final public class GameMap extends Canvas {
 	private final static Image GAME_OVER = new Image(Display.getCurrent(), "./img/game_over_shell.png");
 	
 	private static Color blue = new Color(Display.getCurrent(), 102, 204, 255);
+	private static Color snowColor = new Color(Display.getCurrent(), 223, 236, 248);
 	public static Color red = new Color(Display.getCurrent(), 255, 0, 0);
-	private int userRecord = Preferences.userRoot().node("dudescore").getInt("score", 0);
+	
+	private int userRecord = Preferences.userRoot().node("dude_score").getInt("score", 0);
 	
 	/**
 	 * Инициализирует игровую сцену, устанавливает правила отрисовки. Сцена создает свой список объектов, который содержит те же ссылки, что и списки объектов игрового цикла,
@@ -105,6 +113,9 @@ final public class GameMap extends Canvas {
 		objects.sort(spriteComparator);
 		
 		addPaintListener(new PaintListener() {
+			private boolean timerTaskSheduled = false;
+			private boolean needShowHint = false;
+			
 			@Override
 			public void paintControl(PaintEvent e) {
 				paintBackground(e);			
@@ -116,7 +127,9 @@ final public class GameMap extends Canvas {
 				e.gc.setBackground(blue);
 				e.gc.setAdvanced(true);
 				e.gc.setInterpolation(SWT.HIGH);
-				e.gc.fillRectangle(0, 0, MainWindow.getShell().getSize().x, MainWindow.getShell().getSize().y - 180);
+				e.gc.fillRectangle(0, 0, MainWindow.getShell().getSize().x, MainWindow.getShell().getSize().y - DEFAULT_GROUND_HEIGHT);
+				e.gc.setBackground(snowColor);
+				e.gc.fillRectangle(0, MainWindow.getShell().getSize().y - DEFAULT_GROUND_HEIGHT, MainWindow.getShell().getSize().x, MainWindow.getShell().getSize().y);
 			}
 
 			private void paintSprites(PaintEvent e) {
@@ -160,16 +173,31 @@ final public class GameMap extends Canvas {
 							(GameMap.this.getBounds().height - pauseMessageImageHeight) / 2);
 				}
 				
+				boolean isGameOver = !GameLoop.getGameLoop().isAlive() && !GameLoop.getGameLoop().isPause();
 				//Отрисовка окна окончания игры
-				if (!GameLoop.getGameLoop().isAlive() && !GameLoop.getGameLoop().isPause()){
+				if (isGameOver){
 					drawFieldForMessages(e);
 					
 					String scoreMessage = getScoreMessage();
-					int scoreMessageLength = e.gc.textExtent(scoreMessage).x;
-					e.gc.drawText(scoreMessage, (GameMap.this.getBounds().width - scoreMessageLength) / 2,
-							GameMap.this.getBounds().height / 2 - e.gc.textExtent(scoreMessage).y - 10, true);
-					
+					drawScoreMessage(e, scoreMessage);
 					drawGameOverMessage(e);
+					if (!timerTaskSheduled){
+						new Timer().schedule(new TimerTask() {
+							
+							@Override
+							public void run() {
+								if (isGameOver)
+									needShowHint = !needShowHint;
+								else
+									cancel();
+							}
+							
+						}, 0, 1000);
+						timerTaskSheduled = true;
+					}
+					if (needShowHint){
+						drawNewGameHint(e);
+					}
 				}
 				
 				
@@ -177,9 +205,22 @@ final public class GameMap extends Canvas {
 				gold.dispose();
 			}
 
+			private void drawNewGameHint(PaintEvent e) {
+				Point hintMessageBounds = e.gc.textExtent(NEW_GAME_HINT);
+				e.gc.drawText(NEW_GAME_HINT,
+						(GameMap.this.getBounds().width - hintMessageBounds.x) / 2,
+						GameMap.this.getBounds().height / 2 + hintMessageBounds.y + 20, true);
+			}
+
+			private void drawScoreMessage(PaintEvent e, String scoreMessage) {
+				Point scoreMessageBounds = e.gc.textExtent(scoreMessage);
+				e.gc.drawText(scoreMessage, (GameMap.this.getBounds().width - scoreMessageBounds.x) / 2,
+						GameMap.this.getBounds().height / 2 - scoreMessageBounds.y - 10, true);
+			}
+
 			private void drawGameOverMessage(PaintEvent e) {
-				int gameOverMessageWidth = e.gc.textExtent("КОНЕЦ ИГРЫ").x;
-				e.gc.drawText("КОНЕЦ ИГРЫ", (GameMap.this.getBounds().width - gameOverMessageWidth) / 2,
+				Point gameOverMessageBounds = e.gc.textExtent(GAME_OVER_MESSAGE);
+				e.gc.drawText(GAME_OVER_MESSAGE, (GameMap.this.getBounds().width - gameOverMessageBounds.x) / 2,
 						GameMap.this.getBounds().height / 2, true);
 			}
 
@@ -239,6 +280,7 @@ final public class GameMap extends Canvas {
 		CLOUD.dispose();
 		PAUSE.dispose();
 		red.dispose();
+		snowColor.dispose();
 	}
 	
 	/**

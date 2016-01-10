@@ -34,7 +34,8 @@ public class GameLoop{
 	private ArrayList<Manager> managers;
 	private boolean alive = true;
 	private boolean pause = false;
-	private static KeyListener mainListener;
+	private static KeyListener mainListener, pauseListener;
+	private boolean firstStart = true;
 
 	private GameLoop(){
 		managers = new ArrayList<>();
@@ -135,20 +136,34 @@ public class GameLoop{
 		alive = true;
 		if (players == null || sprites == null || backgrounds == null)
 			throw new IllegalStateException("Нужно инициализировать объекты игрового цикла, прежде чем запускать его.");
+		
+		if (firstStart)
 		Display.getCurrent().asyncExec(new Runnable(){
 
 			@Override
 			public void run() {
 				if (alive){
 					moveSprites();
-					for (Manager manager : managers)
-						manager.manage();
+					for (int i = 0; i < managers.size(); i++)
+						managers.get(i).manage();
+					updateMap();
+				}else
+				{
+					updateMap();
+				}
+			}
+
+			private void updateMap() {
+				if (!GameMap.getInstance().isDisposed()){
 					GameMap.getInstance().redraw();
-					MainWindow.getDisplay().timerExec(17, this);
+					if (!MainWindow.getDisplay().isDisposed())
+						MainWindow.getDisplay().timerExec(17, this);	
 				}
 			}
 			
 		});
+		firstStart = false;
+		
 	}
 	
 	final public void pause(){
@@ -176,19 +191,21 @@ public class GameLoop{
 	}
 	
 	/**
-	 * Останавливает игровой цикл. Проверяет достигнут ли игроком новый рекорд.
+	 * Останавливает игровой цикл. Проверяет достигнут ли игроком новый рекорд. Очищает список менеджеров.
 	 */
 	final public void stop(){
 		alive = false;
 		saveScore();
 		MainWindow.getShell().removeKeyListener(mainListener);
+		MainWindow.getShell().removeKeyListener(pauseListener);
+		managers.clear();
 	}
 
 	private void saveScore() {
 		int score = getPlayers().get(0).getPassed() / 10;
-		int record = Preferences.userRoot().node("dudescore").getInt("score", 0);
+		int record = Preferences.userRoot().node("dude_score").getInt("score", 0);
 		if (score > record)
-			Preferences.userRoot().node("dudescore").putInt("score", score);
+			Preferences.userRoot().node("dude_score").putInt("score", score);
 	}
 	
 	
@@ -236,7 +253,7 @@ public class GameLoop{
 		Back back4 = new Back(back3, GameMap.BACK_2);
 		backgrounds.add(back4);
 		 
-		GameLoop loop = GameLoop.createLoop();
+		GameLoop loop = GameLoop.getGameLoop();
 
 		loop.addManager(new InteractionManager());
 		loop.addManager(new Camera().spy(dude));
@@ -269,8 +286,7 @@ public class GameLoop{
 				}
 			}
 		};
-		MainWindow.getShell().addKeyListener(mainListener);
-		MainWindow.getShell().addKeyListener(new KeyAdapter() {
+		pauseListener = new KeyAdapter(){
 			@Override
 			public void keyPressed(KeyEvent e) {
 				switch (e.keyCode){
@@ -282,18 +298,12 @@ public class GameLoop{
 					break;
 				}
 			}
-		});
+		};
+		MainWindow.getShell().addKeyListener(mainListener);
+		MainWindow.getShell().addKeyListener(pauseListener);
 		MainWindow.getShell().layout();
 	}
-	
-	/**
-	 * Создает и кэширует новый объект игрового цикла
-	 * @return объект игрового цикла
-	 */
-	final protected static GameLoop createLoop() {
-		instance = new GameLoop();
-		return instance;
-	}
+
 
 	/**
 	 * Возвращает список фонов

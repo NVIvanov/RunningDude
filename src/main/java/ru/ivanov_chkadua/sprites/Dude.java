@@ -6,6 +6,7 @@ import java.util.TimerTask;
 import org.eclipse.swt.graphics.Rectangle;
 
 import ru.ivanov_chkadua.game.Command;
+import ru.ivanov_chkadua.game.GameLoop;
 import ru.ivanov_chkadua.game.GameMap;
 
 /**
@@ -56,7 +57,7 @@ public class Dude extends Sprite{
 					
 					@Override
 					public void run() {
-						if (jumping)
+						if (isRunning() && jumping && !GameLoop.getGameLoop().isPause())
 							img = GameMap.DUDE_JUMP[jumpImageIndex++ % GameMap.DUDE_JUMP.length];
 						else{
 							jumpImageIndex = 0;
@@ -81,7 +82,7 @@ public class Dude extends Sprite{
 					
 					@Override
 					public void run() {
-						if (isRunning() && !jumping && !rolling){
+						if (isRunning() && !jumping && !rolling && !GameLoop.getGameLoop().isPause()){
 							img = GameMap.DUDE_RUN[runImageIndex++ % GameMap.DUDE_RUN.length];
 						}else if (!isRunning()){
 							cancel();
@@ -151,7 +152,7 @@ public class Dude extends Sprite{
 					
 					@Override
 					public void run() {
-						if (rolling){
+						if (running && rolling && !GameLoop.getGameLoop().isPause()){
 							img = GameMap.DUDE_ROLL[rollImageIndex++ % GameMap.DUDE_ROLL.length];
 						}else if (!rolling){
 							rollImageIndex = 0;
