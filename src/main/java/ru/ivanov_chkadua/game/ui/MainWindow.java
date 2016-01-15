@@ -1,23 +1,20 @@
 package ru.ivanov_chkadua.game.ui;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.*;
 
 import ru.ivanov_chkadua.game.GameLoop;
 import ru.ivanov_chkadua.game.GameMap;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Основное окно, в котором отображается игровая сцена
@@ -55,7 +52,6 @@ public class MainWindow {
 		
 		setupMainMenu();
 		shell.open();
-		
 		
 		while (!shell.isDisposed()){
 			if (!display.readAndDispatch())
@@ -95,26 +91,30 @@ public class MainWindow {
 		gridData.horizontalSpan = 3;
 		start.setLayoutData(gridData);
 		
-		final Label easy = new Label(shell, SWT.NONE);
+		final Label easy = new Label(shell, SWT.BOTTOM);
 		easy.setBackground(white);		
 		easy.setImage(easyModeNormal);
 		
-		final Label normal = new Label(shell, SWT.NONE);
+		final Label normal = new Label(shell, SWT.BOTTOM);
 		normal.setBackground(white);
 		normal.setImage(mediumModeNormal);
 		
 		
-		final Label hard = new Label(shell, SWT.NONE);
+		final Label hard = new Label(shell, SWT.BOTTOM);
 		hard.setBackground(white);
 		hard.setImage(hardModeNormal);
+
+		final Label user = new Label(shell, SWT.BOTTOM);
+		user.setBackground(white);
+		user.setImage(mediumModeNormal);
 		
-		GridData gridData2 = new GridData(SWT.CENTER, SWT.CENTER, true, true);
-		gridData2.widthHint = SWT.DEFAULT;
-		gridData2.heightHint = SWT.DEFAULT;
+		GridData gridData2 = new GridData(SWT.LEFT, SWT.BOTTOM, true, true);
+		gridData2.widthHint = SWT.MAX;
+		gridData2.heightHint = 95;
 		easy.setLayoutData(gridData2);
 		normal.setLayoutData(gridData2);
 		hard.setLayoutData(gridData2);
-		
+		user.setLayoutData(gridData2);
 		
 		easy.addMouseListener(new MouseListener() {
 			
@@ -124,6 +124,7 @@ public class MainWindow {
 				easy.setImage(easyModeSelected);
 				normal.setImage(mediumModeNormal);
 				hard.setImage(hardModeNormal);
+				user.setImage(mediumModeNormal);
 			}
 			
 			@Override
@@ -141,6 +142,7 @@ public class MainWindow {
 				easy.setImage(easyModeNormal);
 				normal.setImage(mediumModeSelected);
 				hard.setImage(hardModeNormal);
+				user.setImage(mediumModeNormal);
 			}
 			
 			@Override
@@ -158,6 +160,7 @@ public class MainWindow {
 				easy.setImage(easyModeNormal);
 				normal.setImage(mediumModeNormal);
 				hard.setImage(hardModeSelected);
+				user.setImage(mediumModeNormal);
 			}
 		
 			@Override
@@ -166,7 +169,37 @@ public class MainWindow {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {}
 		});
-		
+
+		user.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				easy.setImage(easyModeNormal);
+				normal.setImage(mediumModeNormal);
+				hard.setImage(hardModeNormal);
+				user.setImage(mediumModeSelected);
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+
+			}
+		});
+
+		final Button browse = new Button(shell, SWT.PUSH);
+		browse.setText("Выбрать...");
+		GridData gridDataForBrowse = new GridData(SWT.RIGHT, SWT.BOTTOM, true, true);
+		browse.setLayoutData(gridDataForBrowse);
+		browse.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				difficulty = 4;
+			}
+		});
+
 		start.addMouseListener(new MouseListener() {
 			
 			@Override
@@ -175,6 +208,8 @@ public class MainWindow {
 				easy.dispose();
 				normal.dispose();
 				hard.dispose();
+				user.dispose();
+				browse.dispose();
 				shell.setLayout(new FillLayout());
 				shell.addKeyListener(new KeyListener() {
 					
@@ -202,10 +237,11 @@ public class MainWindow {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {}
 		});
-		
-		
+
+
+
 		GridLayout layout = new GridLayout();
-		layout.numColumns = 3;
+		layout.numColumns = 1;
 		shell.setLayout(layout);
 		shell.setMaximized(true);
 		shell.addDisposeListener(new DisposeListener() {

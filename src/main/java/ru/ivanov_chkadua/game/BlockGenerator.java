@@ -50,40 +50,37 @@ final public class BlockGenerator implements Manager{
 	@Override
 	public void manage() {
 		Sprite firstBlock = getFirstInteractiveSprite();
-		if (firstBlock == null)
-			throw new IllegalStateException(EMPTY_LIST_OF_INTERACTIVE_SPRITES);
+		if (firstBlock == null){
+            for (int i = 0; i < GameLoop.getGameLoop().getSprites().size(); i++)
+                System.out.println(GameLoop.getGameLoop().getSprites().get(i).isInteractive());
+            throw new IllegalStateException(EMPTY_LIST_OF_INTERACTIVE_SPRITES);
+        }
+
 		Sprite lastBlock = getNearestInteractiveSprite();
 		Rectangle firstBlockBounds = firstBlock.bounds();
 		Rectangle lastBlockBounds = lastBlock.bounds();
 		if (firstBlockBounds.x + firstBlockBounds.width < 0){
 			GameLoop.getGameLoop().removeSprite(firstBlock);
 			int rand = new Random().nextInt(100);
-			Sprite newBlock;
-			switch (rand % 8) {
-				case 0:
-					newBlock = new BlockOfTreeTrees();
-					break;
-				case 1:
-					newBlock = new BlockTwoStonesOneTree();
-					break;
-				case 2:
-					newBlock = new BlockOfThreeSnowballs();
-					break;
-				case 3:
-					newBlock = new FireTreeFire();
-					break;
-				case 4:
-					newBlock = new SnowdriftFireLog();
-					break;
-				case 5:
-					newBlock = new SnowdriftSnowballSnowdrift();
-					break;
-				case 6:
-					newBlock = new ThreeFires();
-					break;
-				default:
-					newBlock = new TreeLogSnowball();
-					break;
+			Sprite newBlock = null;
+//			switch (rand % 3){
+//				case 0:
+//					newBlock = new TreeLogSnowball();
+//					break;
+//				case 1:
+//					newBlock = new BlockOfTreeTrees();
+//					break;
+//				case 2:
+//					newBlock = new BlockTwoStonesOneTree();
+//					break;
+//				default:
+//					newBlock = new BlockTwoStonesOneTree();
+//			}
+			if (GameLoop.getGameLoop().getBlockInstances().size() != 0){
+				int rem = rand % GameLoop.getGameLoop().getBlockInstances().size();
+				newBlock = new Sprite(GameLoop.getGameLoop().getBlockInstances().get(rem));
+				newBlock.replace(lastBlockBounds.width + lastBlockBounds.x + standartOffset, 0);
+				GameLoop.getGameLoop().addSprite(newBlock);
 			}
 			newBlock.replace(lastBlockBounds.width + lastBlockBounds.x + standartOffset, 0);
 			GameLoop.getGameLoop().addSprite(newBlock);

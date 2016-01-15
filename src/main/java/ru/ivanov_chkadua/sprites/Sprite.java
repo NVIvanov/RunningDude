@@ -61,7 +61,15 @@ public class Sprite implements Executor{
 	public Sprite(Rectangle placement){
 		this(placement, null);
 	}
-	
+
+	public Sprite(Sprite sprite){
+		this(sprite.bounds());
+		interactive = sprite.interactive;
+		for (int i = 0; i < sprite.childs.size(); i++) {
+			addChild(new Sprite(sprite.childs.get(i)), 0);
+		}
+	}
+
 	/**
 	 * Добавляет дочерний спрайт. Если добавлен хоть один дочерний спрайт, то методы отрисовки и наложения будут вызываться автоматически для всех дочерних спрайтов, но не для текущего.
 	 * Размещение дочерний спрайтов происходит относительно последнего добавленного, друг за другом.
@@ -87,7 +95,9 @@ public class Sprite implements Executor{
 			for (Sprite child : childs)
 				child.paint(e);
 	}
-	
+
+
+
 	final private void paintComponent(PaintEvent e){
 		if (drawable){
 			if (img == null){

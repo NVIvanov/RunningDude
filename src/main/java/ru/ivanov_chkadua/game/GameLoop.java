@@ -1,5 +1,6 @@
 package ru.ivanov_chkadua.game;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -12,6 +13,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Display;
 
+import org.eclipse.swt.widgets.FileDialog;
 import ru.ivanov_chkadua.game.ui.MainWindow;
 import ru.ivanov_chkadua.sprites.Back;
 import ru.ivanov_chkadua.sprites.BlockOfThreeSnowballs;
@@ -31,6 +33,7 @@ public class GameLoop{
 	private List<Dude> players;
 	private List<Sprite> sprites;
 	private List<Back> backgrounds;
+	private List<Sprite> blockInstances;
 	private ArrayList<Manager> managers;
 	private boolean alive = true;
 	private boolean pause = false;
@@ -56,12 +59,14 @@ public class GameLoop{
 	 * @param players список объектов-игроков
 	 * @param objects список объектов, в котором можно хранить декорации и препятствия
 	 * @param backgrounds список фонов
-	 * @return объект игровго цикла
+	 * @param blockInstances
+     * @return объект игровго цикла
 	 */
-	final public GameLoop putObjects(List<Dude> players, List<Sprite> objects, List<Back> backgrounds){
+	final public GameLoop putObjects(List<Dude> players, List<Sprite> objects, List<Back> backgrounds, List<Sprite> blockInstances){
 		sprites = objects;
 		this.players = players;
 		this.backgrounds = backgrounds;
+        this.blockInstances = blockInstances;
 		return this;
 	}
 	
@@ -101,7 +106,7 @@ public class GameLoop{
 		return players;
 	}
 	
-	/**
+	/**-
 	 * Возвращает список декораций и препятствий, можно использовать в менеджерах
 	 * @return
 	 */
@@ -252,15 +257,25 @@ public class GameLoop{
 		backgrounds.add(back3);
 		Back back4 = new Back(back3, GameMap.BACK_2);
 		backgrounds.add(back4);
-		 
-		GameLoop loop = GameLoop.getGameLoop();
+
+		BlockReader reader = new BlockReader();
+		List<Sprite> blockInstances;
+        String filename = new FileDialog(MainWindow.getShell()).open();
+        try {
+            blockInstances = reader.getBlocksList(filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        GameLoop loop = GameLoop.getGameLoop();
 
 		loop.addManager(new InteractionManager());
 		loop.addManager(new Camera().spy(dude));
 		loop.addManager(new BlockGenerator(difficulty));
 		loop.addManager(new BackgroundGenerator());
 		loop.addManager(new CloudManager());
-		loop.putObjects(players, sprites, backgrounds);
+		loop.putObjects(players, sprites, backgrounds, blockInstances);
 		loop.buildMap();
 		loop.start();
 		
@@ -312,4 +327,8 @@ public class GameLoop{
 	synchronized final public List<Back> getBackgrounds() {
 		return backgrounds;
 	}
+
+    public List<Sprite> getBlockInstances() {
+        return blockInstances;
+    }
 }
