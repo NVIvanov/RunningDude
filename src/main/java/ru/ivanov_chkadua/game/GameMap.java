@@ -171,7 +171,7 @@ final public class GameMap extends Canvas {
 							(GameMap.this.getBounds().height - pauseMessageImageHeight) / 2);
 				}
 				
-				boolean isGameOver = !GameLoop.getGameLoop().isAlive() && !GameLoop.getGameLoop().isPause();
+				final boolean isGameOver = !GameLoop.getGameLoop().isAlive() && !GameLoop.getGameLoop().isPause();
 				//Отрисовка окна окончания игры
 				if (isGameOver){
 					drawFieldForMessages(e);

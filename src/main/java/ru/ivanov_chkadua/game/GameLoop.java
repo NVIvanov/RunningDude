@@ -224,7 +224,7 @@ public class GameLoop{
 	 * в менеджере генерации блоков препятствий.
 	 */
 	public static void prepareAndStartGame(int difficulty){
-		Dude dude = new Dude();
+		final Dude dude = new Dude();
 		Sprite block = new BlockOfTreeTrees();
 		block.replace(600, 0);
 		Sprite block1 = new BlockTwoStonesOneTree();

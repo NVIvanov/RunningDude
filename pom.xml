@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>ru.ivanov_chkadua</groupId>
-  <artifactId>Dude</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <properties>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>ru.ivanov_chkadua</groupId>
+	<artifactId>Dude</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<properties>
 		<swt.version>4.5.1</swt.version>
 	</properties>
 	<profiles>
@@ -88,7 +88,7 @@
 		</profile>
 	</profiles>
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
 			<resource>
 				<directory>res</directory>
@@ -99,8 +99,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.3</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 		</plugins>

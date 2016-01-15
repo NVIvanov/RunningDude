@@ -208,7 +208,7 @@ public class Dude extends Sprite{
 	 * Устанавливает ускорение, раз в 6 сек скорость увеличивается на указанную величину.
 	 * @param a величина ускорения
 	 */
-	public void setAcceleration(int a){
+	public void setAcceleration(final int a){
 		new Timer().schedule(new TimerTask(){
 
 			@Override

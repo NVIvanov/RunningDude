@@ -47,7 +47,7 @@ public class MainWindow {
 	
 	/**
 	 * Создает и кэширует объекты Display и Shell, создает главное меню игры
-	 * @param args
+	 * @param args аргументы командной строки
 	 */
 	public static void main(String[] args){
 		display = new Display();
@@ -72,21 +72,21 @@ public class MainWindow {
 	 */
 	private static void setupMainMenu() {
 		Image startNormal = new Image(Display.getCurrent(), "./img/text/standart/start.png");
-		Image easyModeNormal = new Image(Display.getCurrent(), "./img/text/standart/easy.png");
-		Image mediumModeNormal = new Image(Display.getCurrent(), "./img/text/standart/medium.png");
-		Image hardModeNormal = new Image(Display.getCurrent(), "./img/text/standart/hard.png");
+		final Image easyModeNormal = new Image(Display.getCurrent(), "./img/text/standart/easy.png");
+		final Image mediumModeNormal = new Image(Display.getCurrent(), "./img/text/standart/medium.png");
+		final Image hardModeNormal = new Image(Display.getCurrent(), "./img/text/standart/hard.png");
 //		Image startPointed = new Image(Display.getCurrent(), "./img/text/on_point/start.png");
 //		Image easyModePointed = new Image(Display.getCurrent(), "./img/text/on_point/easy.png");
 //		Image mediumModePointed = new Image(Display.getCurrent(), "./img/text/on_point/medium.png");
 //		Image hardModePointed = new Image(Display.getCurrent(), "./img/text/on_point/hard.png");
-		Image easyModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/easy.png");
-		Image mediumModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/medium.png");
-		Image hardModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/hard.png");
+		final Image easyModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/easy.png");
+		final Image mediumModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/medium.png");
+		final Image hardModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/hard.png");
 		
 		Color white = new Color(display, 255, 255, 255);
 		shell.setBackground(white);
 		
-		Label start = new Label(shell, SWT.BOTTOM);
+		final Label start = new Label(shell, SWT.BOTTOM);
 		start.setBackground(white);
 		start.setImage(startNormal);
 		GridData gridData = new GridData(SWT.CENTER, SWT.BOTTOM, true, true);
@@ -95,16 +95,16 @@ public class MainWindow {
 		gridData.horizontalSpan = 3;
 		start.setLayoutData(gridData);
 		
-		Label easy = new Label(shell, SWT.NONE);
+		final Label easy = new Label(shell, SWT.NONE);
 		easy.setBackground(white);		
 		easy.setImage(easyModeNormal);
 		
-		Label normal = new Label(shell, SWT.NONE);
+		final Label normal = new Label(shell, SWT.NONE);
 		normal.setBackground(white);
 		normal.setImage(mediumModeNormal);
 		
 		
-		Label hard = new Label(shell, SWT.NONE);
+		final Label hard = new Label(shell, SWT.NONE);
 		hard.setBackground(white);
 		hard.setImage(hardModeNormal);
 		
