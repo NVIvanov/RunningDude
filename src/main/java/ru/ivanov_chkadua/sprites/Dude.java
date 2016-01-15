@@ -15,7 +15,8 @@ import ru.ivanov_chkadua.game.GameMap;
  *
  */
 public class Dude extends Sprite{
-	private static final int START_SPEED_Y = 23;
+	private static final int START_SPEED_X = 35;
+	private static final int START_SPEED_Y = 25;
 	private Command jump, run, stop, roll;
 	private int runImageIndex = 0, jumpImageIndex = 0, rollImageIndex = 0;
 	private boolean jumping, rolling, running;
@@ -76,7 +77,7 @@ public class Dude extends Sprite{
 				if (isRunning())
 					return;
 				running = true;
-				XSpeed = 18;
+				XSpeed = START_SPEED_X;
 				
 				new Timer().schedule(new TimerTask() {
 					

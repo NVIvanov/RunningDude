@@ -308,7 +308,7 @@ public class Sprite implements Executor{
 			}else
 				YSpeed = 0;	
 		}else
-			YSpeed -= 2 * weightRatio;
+			YSpeed -= 4 * weightRatio;
 	}
 	
 	/**

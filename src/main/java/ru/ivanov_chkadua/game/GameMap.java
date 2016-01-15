@@ -102,7 +102,7 @@ final public class GameMap extends Canvas {
 	 * @param backgrounds
 	 */
 	private GameMap(List<Dude> players, List<Sprite> sprites, List<Back> backgrounds){
-		super(MainWindow.getShell(), SWT.DOUBLE_BUFFERED);
+		super(MainWindow.getShell(), SWT.DOUBLE_BUFFERED);		
 		try{
 			objects.addAll(players);
 			objects.addAll(sprites);
@@ -125,8 +125,6 @@ final public class GameMap extends Canvas {
 
 			private void paintBackground(PaintEvent e) {
 				e.gc.setBackground(blue);
-				e.gc.setAdvanced(true);
-				e.gc.setInterpolation(SWT.HIGH);
 				e.gc.fillRectangle(0, 0, MainWindow.getShell().getSize().x, MainWindow.getShell().getSize().y - DEFAULT_GROUND_HEIGHT);
 				e.gc.setBackground(snowColor);
 				e.gc.fillRectangle(0, MainWindow.getShell().getSize().y - DEFAULT_GROUND_HEIGHT, MainWindow.getShell().getSize().x, MainWindow.getShell().getSize().y);
