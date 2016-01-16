@@ -50,7 +50,7 @@ public class Dude extends Sprite{
 							cancel();
 						}
 					}
-					
+
 				};
 				new Timer().schedule(jump, 25, 17);
 				
@@ -94,76 +94,67 @@ public class Dude extends Sprite{
 			
 		};
 		
-		stop = new Command(){
-
-			@Override
-			public void execute() {
-				XSpeed = 0;
-				YSpeed = 0;
-				running = false;
-			}
-			
-		};
+		stop = () -> {
+            XSpeed = 0;
+            YSpeed = 0;
+            running = false;
+        };
 		
-		roll = new Command(){
+		roll = () -> {
+            if (rolling || jumping || !isRunning())
+                return;
+            rolling = true;
+            moveUpPoints(-50);
+            TimerTask roll1 = new TimerTask(){
 
-			@Override
-			public void execute() {
-				if (rolling || jumping || !isRunning())
-					return;
-				rolling = true;
-				moveUpPoints(-50);
-				TimerTask roll = new TimerTask(){
+                @Override
+                public void run() {
+                    moveUpPoints(-35);
+                    moveRightPoints(35);
+                }
 
-					@Override
-					public void run() {
-						moveUpPoints(-35);
-						moveRightPoints(35);						
-					}
-					
-				};
-				
-				TimerTask halfStand = new TimerTask(){
+            };
 
-					@Override
-					public void run() {
-						moveUpPoints(35);
-						moveRightPoints(-35);						
-					}
-					
-				};
-				
-				TimerTask standBack = new TimerTask(){
+            TimerTask halfStand = new TimerTask(){
 
-					@Override
-					public void run() {
-						moveUpPoints(50);
-						rolling = false;
-						rollImageIndex = 0;
-					}
-					
-				};
-				
-				Timer timer = new Timer();
-				timer.schedule(roll, 400);
-				timer.schedule(halfStand, 600);
-				timer.schedule(standBack, 800);
-				
-				new Timer().schedule(new TimerTask() {
-					
-					@Override
-					public void run() {
-						if (running && rolling && !GameLoop.getGameLoop().isPause()){
-							img = GameMap.DUDE_ROLL[rollImageIndex++ % GameMap.DUDE_ROLL.length];
-						}else if (!rolling){
-							rollImageIndex = 0;
-							cancel();
-						}
-					}
-				}, 0, 70);
-			}
-			
-		};
+                @Override
+                public void run() {
+                    moveUpPoints(35);
+                    moveRightPoints(-35);
+                }
+
+            };
+
+            TimerTask standBack = new TimerTask(){
+
+                @Override
+                public void run() {
+                    moveUpPoints(50);
+                    rolling = false;
+                    rollImageIndex = 0;
+                }
+
+            };
+
+            Timer timer = new Timer();
+            timer.schedule(roll1, 400);
+            timer.schedule(halfStand, 600);
+            timer.schedule(standBack, 800);
+
+            new Timer().schedule(new TimerTask() {
+
+                @Override
+                public void run() {
+					//System.out.println("Таймер смены изображения переката");
+                    if (running && rolling && !GameLoop.getGameLoop().isPause()){
+                        img = GameMap.DUDE_ROLL[rollImageIndex++ % GameMap.DUDE_ROLL.length];
+                    }else if (!rolling){
+                        rollImageIndex = 0;
+                        cancel();
+                    }
+                }
+            }, 0, 70);
+        };
 	}
 	
 	@Override
@@ -203,26 +194,6 @@ public class Dude extends Sprite{
 	public void roll(){
 		execute(roll);
 	}
-	
-	/**
-	 * Устанавливает ускорение, раз в 6 сек скорость увеличивается на указанную величину.
-	 * @param a величина ускорения
-	 */
-	public void setAcceleration(final int a){
-		new Timer().schedule(new TimerTask(){
-
-			@Override
-			public void run() {
-				if (XSpeed <= 0){
-					cancel();
-					return;
-				}
-				XSpeed += a;
-			}
-			
-		}, 0, 6000);
-	}
-
 
 	/**
 	 * 

@@ -8,13 +8,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-
-import ru.ivanov_chkadua.game.GameLoop;
 import ru.ivanov_chkadua.game.GameMap;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import static ru.ivanov_chkadua.game.GameLoop.*;
 
 /**
  * Основное окно, в котором отображается игровая сцена
@@ -24,7 +20,8 @@ import java.io.IOException;
 public class MainWindow {
 	private static Shell shell;
 	private static Display display;
-	private static int difficulty = 1;
+	private static Difficulty difficulty = Difficulty.EASY;
+	private static String blockSequenceFileName;
 	
 	/**
 	 * Метод получения кэшированного объекта Shell
@@ -120,7 +117,7 @@ public class MainWindow {
 			
 			@Override
 			public void mouseUp(MouseEvent e) {
-				difficulty = 1;
+				difficulty = Difficulty.EASY;
 				easy.setImage(easyModeSelected);
 				normal.setImage(mediumModeNormal);
 				hard.setImage(hardModeNormal);
@@ -135,39 +132,43 @@ public class MainWindow {
 		});
 		
 		normal.addMouseListener(new MouseListener() {
-			
+
 			@Override
 			public void mouseUp(MouseEvent e) {
-				difficulty = 2;
+				difficulty = Difficulty.MEDIUM;
 				easy.setImage(easyModeNormal);
 				normal.setImage(mediumModeSelected);
 				hard.setImage(hardModeNormal);
 				user.setImage(mediumModeNormal);
 			}
-			
+
 			@Override
-			public void mouseDown(MouseEvent e) {}
-			
+			public void mouseDown(MouseEvent e) {
+			}
+
 			@Override
-			public void mouseDoubleClick(MouseEvent e) {}
+			public void mouseDoubleClick(MouseEvent e) {
+			}
 		});
 		
 		hard.addMouseListener(new MouseListener() {
-			
+
 			@Override
 			public void mouseUp(MouseEvent e) {
-				difficulty = 3;
+				difficulty = Difficulty.HARD;
 				easy.setImage(easyModeNormal);
 				normal.setImage(mediumModeNormal);
 				hard.setImage(hardModeSelected);
 				user.setImage(mediumModeNormal);
 			}
-		
+
 			@Override
-			public void mouseDown(MouseEvent e) {}
-			
+			public void mouseDown(MouseEvent e) {
+			}
+
 			@Override
-			public void mouseDoubleClick(MouseEvent e) {}
+			public void mouseDoubleClick(MouseEvent e) {
+			}
 		});
 
 		user.addMouseListener(new MouseListener() {
@@ -177,6 +178,8 @@ public class MainWindow {
 				normal.setImage(mediumModeNormal);
 				hard.setImage(hardModeNormal);
 				user.setImage(mediumModeSelected);
+                difficulty = Difficulty.USER;
+                blockSequenceFileName = new FileDialog(shell).open();
 			}
 
 			@Override
@@ -190,16 +193,6 @@ public class MainWindow {
 			}
 		});
 
-		final Button browse = new Button(shell, SWT.PUSH);
-		browse.setText("Выбрать...");
-		GridData gridDataForBrowse = new GridData(SWT.RIGHT, SWT.BOTTOM, true, true);
-		browse.setLayoutData(gridDataForBrowse);
-		browse.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				difficulty = 4;
-			}
-		});
-
 		start.addMouseListener(new MouseListener() {
 			
 			@Override
@@ -209,7 +202,6 @@ public class MainWindow {
 				normal.dispose();
 				hard.dispose();
 				user.dispose();
-				browse.dispose();
 				shell.setLayout(new FillLayout());
 				shell.addKeyListener(new KeyListener() {
 					
@@ -217,9 +209,9 @@ public class MainWindow {
 					public void keyReleased(KeyEvent e) {
 						switch (e.keyCode){
 						case 13:
-							GameLoop.getGameLoop().stop();
+							getGameLoop().stop();
 							GameMap.getInstance().dispose();
-							GameLoop.prepareAndStartGame(difficulty);
+							prepareAndStartGame(difficulty, blockSequenceFileName);
 							break;
 						}
 					}
@@ -227,10 +219,23 @@ public class MainWindow {
 					@Override
 					public void keyPressed(KeyEvent e) {}
 				});
-				GameLoop.prepareAndStartGame(difficulty);
+                blockSequenceFileName = getFileNameUsingDifficulty();
+				prepareAndStartGame(difficulty, blockSequenceFileName);
 			}
 			
-			
+			private String getFileNameUsingDifficulty(){
+				switch (difficulty){
+					case EASY:
+						return "./easy.txt";
+					case MEDIUM:
+						return "./medium.txt";
+					case HARD:
+						return "./hard.txt";
+					default:
+						return blockSequenceFileName;
+				}
+			}
+
 			@Override
 			public void mouseDown(MouseEvent e) {}
 			
@@ -244,19 +249,15 @@ public class MainWindow {
 		layout.numColumns = 1;
 		shell.setLayout(layout);
 		shell.setMaximized(true);
-		shell.addDisposeListener(new DisposeListener() {
-			
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				if (GameLoop.getGameLoop().isAlive()){
-					GameLoop.getGameLoop().stop();	
-				}
-				if (GameMap.getInstance() != null){
-					GameMap.disposeResources();
-					GameMap.getInstance().dispose();
-				}
-					
+		shell.addDisposeListener(e -> {
+			if (getGameLoop().isAlive()) {
+				getGameLoop().stop();
 			}
+			if (GameMap.getInstance() != null) {
+				GameMap.disposeResources();
+				GameMap.getInstance().dispose();
+			}
+
 		});
 	}
 }

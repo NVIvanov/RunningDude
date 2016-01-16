@@ -41,15 +41,10 @@ final public class GameMap extends Canvas {
 	public final static Image STATIC_BACK = new Image(MainWindow.getDisplay(), "./img/static_back_1_winter.png");
 	public final static Image BACK_1 = new Image(MainWindow.getDisplay(), "./img/back_1_winter.png");
 	public final static Image BACK_2 = new Image(MainWindow.getDisplay(), "./img/back_2_winter.png");
-	private List<Sprite> objects = new ArrayList<>();
-	private Comparator<Sprite> spriteComparator = new Comparator<Sprite>(){
-		@Override
-		public int compare(Sprite o1, Sprite o2) {
-			return
-					o1.getZLevel() == o2.getZLevel()?0:
-						o1.getZLevel() > o2.getZLevel()? -1: 1;
-		}
-	};
+	private final List<Sprite> objects = new ArrayList<>();
+	private Comparator<Sprite> spriteComparator =
+			(o1, o2) -> o1.getZLevel() == o2.getZLevel()?0:
+        				o1.getZLevel() > o2.getZLevel()? -1: 1;
 	
 	public final static Image[] DUDE_RUN = {
 			new Image(Display.getCurrent(), "./img/run/1.png"),
@@ -97,9 +92,9 @@ final public class GameMap extends Canvas {
 	/**
 	 * Инициализирует игровую сцену, устанавливает правила отрисовки. Сцена создает свой список объектов, который содержит те же ссылки, что и списки объектов игрового цикла,
 	 * но отсортированный по значению глубины отрисовки объекта.
-	 * @param players
-	 * @param sprites
-	 * @param backgrounds
+	 * @param players список игроков
+	 * @param sprites список спрайтов
+	 * @param backgrounds список фонов
 	 */
 	private GameMap(List<Dude> players, List<Sprite> sprites, List<Back> backgrounds){
 		super(MainWindow.getShell(), SWT.DOUBLE_BUFFERED);		
@@ -113,7 +108,7 @@ final public class GameMap extends Canvas {
 		objects.sort(spriteComparator);
 		
 		addPaintListener(new PaintListener() {
-			private boolean timerTaskSheduled = false;
+			private boolean timerTaskScheduled = false;
 			private boolean needShowHint = false;
 			
 			@Override
@@ -130,17 +125,19 @@ final public class GameMap extends Canvas {
 				e.gc.fillRectangle(0, MainWindow.getShell().getSize().y - DEFAULT_GROUND_HEIGHT, MainWindow.getShell().getSize().x, MainWindow.getShell().getSize().y);
 			}
 
-			private void paintSprites(PaintEvent e) {
+			@SuppressWarnings("ForLoopReplaceableByForEach")
+            private void paintSprites(PaintEvent e) {
 				Transform tr = new Transform(Display.getCurrent());
 				tr.setElements(1, 0, 0, -1, 0, 0);		
 				tr.translate(0, - MainWindow.getShell().getBounds().height + 150);
 				e.gc.setTransform(tr);
-				for (int i = 0; i < objects.size(); i++){
-					if (objects.get(i).bounds().x + objects.get(i).bounds().width < -300 && !(objects.get(i) instanceof Dude))
-						GameLoop.getGameLoop().removeSprite(objects.get(i));
-					else
-						objects.get(i).paint(e);
-				}
+                for (int i = 0; i < objects.size(); i++){
+                    Sprite object = objects.get(i);
+                    if (object.bounds().x + object.bounds().width < -300 && !(object instanceof Dude))
+                        GameLoop.getGameLoop().removeSprite(object);
+                    else
+                        object.paint(e);
+                }
 				tr.dispose();
 			}
 
@@ -170,28 +167,27 @@ final public class GameMap extends Canvas {
 					e.gc.drawImage(PAUSE, (GameMap.this.getBounds().width - pauseMessageImageWidth) / 2,
 							(GameMap.this.getBounds().height - pauseMessageImageHeight) / 2);
 				}
-				
-				final boolean isGameOver = !GameLoop.getGameLoop().isAlive() && !GameLoop.getGameLoop().isPause();
+
 				//Отрисовка окна окончания игры
-				if (isGameOver){
+				if (isGameOver()){
 					drawFieldForMessages(e);
 					
 					String scoreMessage = getScoreMessage();
 					drawScoreMessage(e, scoreMessage);
 					drawGameOverMessage(e);
-					if (!timerTaskSheduled){
+					if (!timerTaskScheduled){
 						new Timer().schedule(new TimerTask() {
 							
 							@Override
 							public void run() {
-								if (isGameOver)
+								if (isGameOver() && !MainWindow.getDisplay().isDisposed())
 									needShowHint = !needShowHint;
 								else
 									cancel();
 							}
 							
 						}, 0, 1000);
-						timerTaskSheduled = true;
+						timerTaskScheduled = true;
 					}
 					if (needShowHint){
 						drawNewGameHint(e);
@@ -201,6 +197,10 @@ final public class GameMap extends Canvas {
 				
 				font.dispose();
 				gold.dispose();
+			}
+
+			private boolean isGameOver() {
+				return !GameLoop.getGameLoop().isAlive() && !GameLoop.getGameLoop().isPause();
 			}
 
 			private void drawNewGameHint(PaintEvent e) {
@@ -226,7 +226,7 @@ final public class GameMap extends Canvas {
 				int currentScore = GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
 				StringBuilder scoreMessage = new StringBuilder("СЧЕТ: " + currentScore);
 				if (currentScore <= userRecord)
-					scoreMessage.append(" РЕКОРД: " + userRecord);
+					scoreMessage.append(" РЕКОРД: ").append(userRecord);
 				else
 					scoreMessage.append(" НОВЫЙ РЕКОРД!");
 				return scoreMessage.toString();
@@ -268,12 +268,9 @@ final public class GameMap extends Canvas {
 		BACK_1.dispose();
 		BACK_2.dispose();
 		blue.dispose();
-		for (int i = 0; i < DUDE_RUN.length; i++)
-			DUDE_RUN[i].dispose();
-		for (int i = 0; i < DUDE_ROLL.length; i++)
-			DUDE_ROLL[i].dispose();
-		for (int i = 0; i < DUDE_JUMP.length; i++)
-			DUDE_JUMP[i].dispose();
+		for (Image aDUDE_RUN : DUDE_RUN) aDUDE_RUN.dispose();
+		for (Image aDUDE_ROLL : DUDE_ROLL) aDUDE_ROLL.dispose();
+		for (Image aDUDE_JUMP : DUDE_JUMP) aDUDE_JUMP.dispose();
 		BRANCH.dispose();
 		CLOUD.dispose();
 		PAUSE.dispose();

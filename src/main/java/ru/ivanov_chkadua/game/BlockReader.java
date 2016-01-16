@@ -32,10 +32,9 @@ public class BlockReader {
                             throw new IllegalArgumentException();
                         block.addChild(getSpriteUsingNumber(obstacle[0]), obstacle[1]);
                     }
-                    block.addChild(new TreeSprite(), 100);
-                    block.addChild(new TreeSprite(), 200);
                     reader.endObject();
                     blocks.add(block);
+                    System.out.println(block.toString());
                 }
                 reader.endArray();
                 return blocks;

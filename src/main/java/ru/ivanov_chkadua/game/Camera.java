@@ -8,7 +8,6 @@ import ru.ivanov_chkadua.sprites.Sprite;
  * Игровая камера
  */
 public class Camera implements Manager {
-	private int x;
 	private Sprite spy;
 	
 	/**
@@ -16,20 +15,15 @@ public class Camera implements Manager {
 	 */
 	@Override
 	public void manage() {
-		x = spy != null ? spy.bounds().x -100 : 0;
-		
-		for (Sprite sprite: GameLoop.getGameLoop().getSprites()){
-			if (sprite.isMovable())
-				sprite.replace((int)(-x / sprite.getZLevel()), 0);
-		}
-		for (Sprite sprite: GameLoop.getGameLoop().getPlayers()){
-			if (sprite.isMovable())
-				sprite.replace((int)(-x / sprite.getZLevel()), 0);
-		}
-		for (Sprite sprite: GameLoop.getGameLoop().getBackgrounds()){
-			if (sprite.isMovable())
-				sprite.replace((int)(-x / sprite.getZLevel()), 0);
-		}
+		int x = spy != null ? spy.bounds().x - 100 : 0;
+
+		GameLoop loop = GameLoop.getGameLoop();
+		loop.getSprites().stream().filter(Sprite::isMovable)
+				.forEach(sprite -> sprite.replace((int) (-x / sprite.getZLevel()), 0));
+		loop.getPlayers().stream().filter(Sprite::isMovable)
+				.forEach(sprite -> sprite.replace((int) (-x / sprite.getZLevel()), 0));
+		loop.getBackgrounds().stream().filter(Sprite::isMovable)
+				.forEach(sprite -> sprite.replace((int) (-x / sprite.getZLevel()), 0));
 	}
 	
 	/**
@@ -40,12 +34,5 @@ public class Camera implements Manager {
 	public Camera spy(Sprite object){
 		spy = object;
 		return this;
-	}
-
-	/**
-	 * отключает режим слежки
-	 */
-	public void stopSpy(){
-		spy = null;
 	}
 }

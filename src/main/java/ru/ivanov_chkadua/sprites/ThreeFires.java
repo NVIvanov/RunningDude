@@ -10,6 +10,7 @@ public class ThreeFires extends Sprite {
     public ThreeFires() {
         super(new Rectangle(0, 0, 500, 0));
 
+
         addChild(new Fire(),500);
         addChild(new Fire(),500);
         addChild(new Fire(),500);

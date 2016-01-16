@@ -1,26 +1,19 @@
 package ru.ivanov_chkadua.game;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.widgets.Display;
+import ru.ivanov_chkadua.game.ui.MainWindow;
+import ru.ivanov_chkadua.sprites.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.prefs.Preferences;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.widgets.Display;
-
-import org.eclipse.swt.widgets.FileDialog;
-import ru.ivanov_chkadua.game.ui.MainWindow;
-import ru.ivanov_chkadua.sprites.Back;
-import ru.ivanov_chkadua.sprites.BlockOfThreeSnowballs;
-import ru.ivanov_chkadua.sprites.BlockOfTreeTrees;
-import ru.ivanov_chkadua.sprites.BlockTwoStonesOneTree;
-import ru.ivanov_chkadua.sprites.Dude;
-import ru.ivanov_chkadua.sprites.Sprite;
 
 /**
  * 
@@ -29,6 +22,10 @@ import ru.ivanov_chkadua.sprites.Sprite;
  * Кэшируется в памяти, но создается заново при перезапуске игры.
  */
 public class GameLoop{
+    public enum Difficulty{
+        EASY, MEDIUM, HARD, USER
+    }
+
 	private static GameLoop instance;
 	private List<Dude> players;
 	private List<Sprite> sprites;
@@ -48,7 +45,7 @@ public class GameLoop{
 	 * Возвращает объект игрового цикла из кэша
 	 * @return объект игрового цикла
 	 */
-	final public static GameLoop getGameLoop(){
+	public static GameLoop getGameLoop(){
 		if (instance == null)
 			instance = new GameLoop();
 		return instance;
@@ -59,7 +56,7 @@ public class GameLoop{
 	 * @param players список объектов-игроков
 	 * @param objects список объектов, в котором можно хранить декорации и препятствия
 	 * @param backgrounds список фонов
-	 * @param blockInstances
+	 * @param blockInstances набор блоков препятствий
      * @return объект игровго цикла
 	 */
 	final public GameLoop putObjects(List<Dude> players, List<Sprite> objects, List<Back> backgrounds, List<Sprite> blockInstances){
@@ -86,13 +83,13 @@ public class GameLoop{
 	
 	/**
 	 * Удаляет спрайт из списка игровых объектов и из списка объектов на сцене. При удалении объекта из цикла нужно использовать именно этот метод, иначе отображение объектов на сцене будет некорректным.
-	 * @param s
+	 * @param s удаляемый спрайт
 	 */
 	final public void removeSprite(Sprite s){
 		if (s instanceof Dude)
-			players.remove((Dude) s);
+			players.remove(s);
 		else if (s instanceof Back)
-			backgrounds.remove((Back)s);
+			backgrounds.remove(s);
 		else
 			sprites.remove(s);
 		GameMap.getInstance().removeSprite(s);
@@ -100,7 +97,7 @@ public class GameLoop{
 	
 	/**
 	 * Возвращает список игроков, можно использовать в менеджерах.
-	 * @return
+	 * @return списрк игроков
 	 */
 	synchronized final public List<Dude> getPlayers(){
 		return players;
@@ -108,7 +105,7 @@ public class GameLoop{
 	
 	/**-
 	 * Возвращает список декораций и препятствий, можно использовать в менеджерах
-	 * @return
+	 * @return список препятствий и декораций
 	 */
 	synchronized final public List<Sprite> getSprites(){
 		return sprites;
@@ -139,12 +136,13 @@ public class GameLoop{
 	 */
 	final public void start(){
 		alive = true;
-		if (players == null || sprites == null || backgrounds == null)
+		if (players == null || sprites == null || backgrounds == null || blockInstances == null)
 			throw new IllegalStateException("Нужно инициализировать объекты игрового цикла, прежде чем запускать его.");
 		
 		if (firstStart)
 		Display.getCurrent().asyncExec(new Runnable(){
 
+			@SuppressWarnings("ForLoopReplaceableByForEach")
 			@Override
 			public void run() {
 				if (alive){
@@ -153,9 +151,7 @@ public class GameLoop{
 						managers.get(i).manage();
 					updateMap();
 				}else
-				{
 					updateMap();
-				}
 			}
 
 			private void updateMap() {
@@ -188,11 +184,9 @@ public class GameLoop{
 		return pause;
 	}
 
-	final private void moveSprites(){
-		for (Sprite player:players)
-			player.move();
-		for (Sprite sprite:sprites)
-			sprite.move();
+	private void moveSprites(){
+		players.forEach(Dude::move);
+		sprites.forEach(Sprite::move);
 	}
 	
 	/**
@@ -200,6 +194,7 @@ public class GameLoop{
 	 */
 	final public void stop(){
 		alive = false;
+        players.forEach(Dude::stop);
 		saveScore();
 		MainWindow.getShell().removeKeyListener(mainListener);
 		MainWindow.getShell().removeKeyListener(pauseListener);
@@ -228,7 +223,7 @@ public class GameLoop{
 	 * @param difficulty уровень сложности, может использоваться в любом пользовательском менеджере, по умолчанию используется
 	 * в менеджере генерации блоков препятствий.
 	 */
-	public static void prepareAndStartGame(int difficulty){
+	public static void prepareAndStartGame(Difficulty difficulty, String filename){
 		final Dude dude = new Dude();
 		Sprite block = new BlockOfTreeTrees();
 		block.replace(600, 0);
@@ -260,7 +255,6 @@ public class GameLoop{
 
 		BlockReader reader = new BlockReader();
 		List<Sprite> blockInstances;
-        String filename = new FileDialog(MainWindow.getShell()).open();
         try {
             blockInstances = reader.getBlocksList(filename);
         } catch (IOException e) {
@@ -283,7 +277,8 @@ public class GameLoop{
 			
 			@Override
 			public void run() {
-				dude.run();
+                if (GameLoop.getGameLoop().alive)
+				    dude.run();
 			}
 		}, 3000);
 		

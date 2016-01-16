@@ -19,7 +19,7 @@ import ru.ivanov_chkadua.game.ui.MainWindow;
  */
 public class Sprite implements Executor{
 	private Rectangle placement;
-	private ArrayList<Sprite> childs;
+	private ArrayList<Sprite> children;
 	protected Image img;
 	private boolean changeImageSize = true;
 	private boolean interactive = false;
@@ -39,7 +39,7 @@ public class Sprite implements Executor{
 	 * @param changeImageSize если true, изображение будет сжато до размера полигона, false - изображение будет отображаться в натуральную величину
 	 */
 	public Sprite(Rectangle placement, Image img, boolean changeImageSize){
-		childs = new ArrayList<>();
+		children = new ArrayList<>();
 		this.placement = placement;
 		this.img = img;
 		this.changeImageSize = changeImageSize;
@@ -55,7 +55,7 @@ public class Sprite implements Executor{
 	}
 	
 	/**
-	 * Конструктор с без указания изображения. Отрисовка будет происходит по правилам, определенным в методе {@link #paintStandartFigure(PaintEvent) paintStandartFigure}
+	 * Конструктор с без указания изображения. Отрисовка будет происходит по правилам, определенным в методе {@link #paintStandardFigure(PaintEvent) paintStandardFigure}
 	 * @param placement полигон спрайта
 	 */
 	public Sprite(Rectangle placement){
@@ -63,10 +63,20 @@ public class Sprite implements Executor{
 	}
 
 	public Sprite(Sprite sprite){
-		this(sprite.bounds());
+		this(new Rectangle(
+                sprite.placement.x, sprite.placement.y, sprite.placement.width, sprite.placement.height
+        ));
+        img = sprite.img;
+        changeImageSize = sprite.changeImageSize;
 		interactive = sprite.interactive;
-		for (int i = 0; i < sprite.childs.size(); i++) {
-			addChild(new Sprite(sprite.childs.get(i)), 0);
+        movable = sprite.movable;
+        drawable = sprite.drawable;
+        bounce = sprite.bounce;
+        ZLevel = sprite.ZLevel;
+        lostSpeed = sprite.lostSpeed;
+        weightRatio = sprite.weightRatio;
+		for (int i = 0; i < sprite.children.size(); i++) {
+			addChild(new Sprite(sprite.children.get(i)));
 		}
 	}
 
@@ -77,31 +87,34 @@ public class Sprite implements Executor{
 	 * @param offsetX смещение относительно предыдущего спрайта
 	 */
 	final public void addChild(Sprite sprite, int offsetX){
-		if (childs.size() == 0)
+		if (children.size() == 0)
 			sprite.replace(placement.x + offsetX, 0);
 		else
-			sprite.replace(childs.get(childs.size() - 1).placement.x + offsetX, 0);
-		childs.add(sprite);
+			sprite.replace(children.get(children.size() - 1).placement.x + offsetX, 0);
+		children.add(sprite);
 	}
-	
+
+    private void addChild(Sprite sprite){
+        children.add(sprite);
+    }
+
 	/**
 	 * метод отрисовки спрайта
-	 * @param e
+	 * @param e событие отрисовки
 	 */
 	final public void paint(PaintEvent e){
-		if (childs.size() == 0)
+		if (children.size() == 0)
 			paintComponent(e);
 		else
-			for (Sprite child : childs)
+			for (Sprite child : children)
 				child.paint(e);
 	}
 
 
-
-	final private void paintComponent(PaintEvent e){
+	private void paintComponent(PaintEvent e){
 		if (drawable){
 			if (img == null){
-				paintStandartFigure(e);
+				paintStandardFigure(e);
 			}else
 				if (!MainWindow.getDisplay().isDisposed()){
 					e.gc.setAdvanced(true);
@@ -119,9 +132,9 @@ public class Sprite implements Executor{
 	
 	/**
 	 * метод отрисовки спрайта, если не установлено изображение для отображения спрайта
-	 * @param e
+	 * @param e событие отрисовки
 	 */
-	protected void paintStandartFigure(PaintEvent e){
+	protected void paintStandardFigure(PaintEvent e){
 		Rectangle rect = new Rectangle(placement.x, placement.y, 
 				placement.width,
 				placement.height);
@@ -133,7 +146,7 @@ public class Sprite implements Executor{
 	
 	/**
 	 * устанавливает флаг необходимости отрисовки
-	 * @param drawable
+	 * @param drawable флаг необходимости отрисовки
 	 */
 	final public void setIsDrawable(boolean drawable) {
 		this.drawable = drawable;
@@ -145,10 +158,10 @@ public class Sprite implements Executor{
 	 * @return true, если происходит наложение, false иначе
 	 */
 	final public boolean overlaps(Sprite other){
-		if (childs.size() == 0)
+		if (children.size() == 0)
 			return placement.intersects(other.placement);
 		boolean overlaps = false;
-		for (Sprite child : childs)
+		for (Sprite child : children)
 			if (child.overlaps(other) && child.isInteractive())
 				overlaps = true;
 		return overlaps;
@@ -156,19 +169,19 @@ public class Sprite implements Executor{
 	
 	/**
 	 * Перемещение на указанные значения
-	 * @param x
-	 * @param y
+	 * @param x смещение по горизонтали
+	 * @param y смещение по вертикали
 	 */
 	final public void replace(int x, int y){
 		placement.x += x;
 		placement.y += y;
-		for (Sprite child:childs)
+		for (Sprite child: children)
 			child.replace(x, y);
 	}
 
 	/**
 	 * Определяет находится ли спрайт на уровне земли (y = 0)
-	 * @return
+	 * @return true, если спрайт на уровне земли, false иначе
 	 */
 	final protected boolean onGroundLevel(){
 		return placement.y <= 0;
@@ -183,21 +196,21 @@ public class Sprite implements Executor{
 	
 	/**
 	 * Перемещает верхние точки полигона спрайта
-	 * @param y
+	 * @param y смещение по вертикали
 	 */
 	final synchronized protected void moveUpPoints(double y){
 		placement.height += y;
-		for (Sprite child : childs)
+		for (Sprite child : children)
 			child.moveUpPoints(y);
 	}
 	
 	/**
 	 * Перемещает правые точки полигона спрайта
-	 * @param x
+	 * @param x смещение по горизонтали
 	 */
 	final synchronized protected void moveRightPoints(double x){
 		placement.width += x;
-		for (Sprite child: childs)
+		for (Sprite child: children)
 			child.moveRightPoints(x);
 	}
 	
@@ -206,18 +219,13 @@ public class Sprite implements Executor{
 	 * @return объект {@link Rectangle}
 	 */
 	final public Rectangle bounds(){
-		if (childs.size() == 0)
+		if (children.size() == 0)
 			return placement;
 		else{
-			Rectangle first = childs.get(0).bounds();
-			Rectangle last = childs.get(childs.size() - 1).bounds();
+			Rectangle first = children.get(0).bounds();
+			Rectangle last = children.get(children.size() - 1).bounds();
 			return new Rectangle(first.x, first.y, last.x + last.width - first.x, last.height);
 		}
-	}
-	
-	@Override
-	public String toString() {
-		return placement.toString();
 	}
 
 	/**
@@ -238,7 +246,7 @@ public class Sprite implements Executor{
 
 	/**
 	 * Устанавливает, можно ли взаимодействовать с объектом. По-умолчанию взаимодействия с объектом нет.
-	 * @param interactive
+	 * @param interactive флаг возможности взаимодействия
 	 */
 	final public void setInteractive(boolean interactive) {
 		this.interactive = interactive;
@@ -246,7 +254,7 @@ public class Sprite implements Executor{
 
 	/**
 	 * Определяет, учитывается ли объект Камерой
-	 * @return
+	 * @return флаг учета камерой
 	 */
 	final public boolean isMovable() {
 		return movable;
@@ -254,7 +262,7 @@ public class Sprite implements Executor{
 
 	/**
 	 * Устанавливает, учитывается ли объект камерой. По-умолчанию объект учитывается камерой.
-	 * @param movable
+	 * @param movable флаг учета объекта камерой
 	 */
 	final public void setMovable(boolean movable) {
 		this.movable = movable;
@@ -263,7 +271,7 @@ public class Sprite implements Executor{
 	/**
 	 * Определяет значение глубины положения объекта на игровой сцене. В зависимости от этого значения камера будет по разному перемещать эти объекты.
 	 * Если значение больше 1, то оно будет двигаться медленнее и отображаться позади относительно объектов, у которых это значение выставлено в 1, если меньше единицы то происходит обратный эффект.
-	 * @return
+	 * @return уровень глубины
 	 */
 	final public double getZLevel() {
 		return ZLevel;
@@ -271,7 +279,7 @@ public class Sprite implements Executor{
 
 	/**
 	 * Установить значение глубины положения объекта
-	 * @param zLevel
+	 * @param zLevel уровень глубины
 	 */
 	final public void setZLevel(double zLevel) {
 		if (ZLevel == 0)
@@ -299,7 +307,7 @@ public class Sprite implements Executor{
 	/**
 	 * Устанавливает весовой коэффициент для данного объекта. При значении равном 1 скорость по вертикали будет убывать на 2
 	 * с каждой итерацией игрового цикла. Чтобы сделать объект невесомым, нужно установить значение 0.
-	 * @param weightRatio
+	 * @param weightRatio весовой коэффициент
 	 */
 	public void setWeightRatio(double weightRatio) {
 		this.weightRatio = weightRatio;
@@ -330,5 +338,16 @@ public class Sprite implements Executor{
 	public void setBounce(boolean bounce, int lostSpeed){
 		this.bounce = bounce;
 		this.lostSpeed = lostSpeed;
+	}
+
+	@Override
+	public String toString() {
+		if (children.size() != 0){
+			StringBuilder builder = new StringBuilder();
+			for (Sprite child: children)
+				builder.append(child.toString());
+			return builder.toString();
+		}
+		return "Sprite{" + placement.x + ", " + placement.y + "} ";
 	}
 }
