@@ -198,7 +198,7 @@ public class Sprite implements Executor{
 	 * Перемещает верхние точки полигона спрайта
 	 * @param y смещение по вертикали
 	 */
-	final synchronized protected void moveUpPoints(double y){
+	final protected void moveUpPoints(double y){
 		placement.height += y;
 		for (Sprite child : children)
 			child.moveUpPoints(y);
@@ -208,7 +208,7 @@ public class Sprite implements Executor{
 	 * Перемещает правые точки полигона спрайта
 	 * @param x смещение по горизонтали
 	 */
-	final synchronized protected void moveRightPoints(double x){
+	final protected void moveRightPoints(double x){
 		placement.width += x;
 		for (Sprite child: children)
 			child.moveRightPoints(x);

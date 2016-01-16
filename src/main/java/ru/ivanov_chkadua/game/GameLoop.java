@@ -105,7 +105,7 @@ public class GameLoop{
 	 * Возвращает список игроков, можно использовать в менеджерах.
 	 * @return списрк игроков
 	 */
-	synchronized final public List<Dude> getPlayers(){
+    final public List<Dude> getPlayers(){
 		return players;
 	}
 	
@@ -113,7 +113,7 @@ public class GameLoop{
 	 * Возвращает список декораций и препятствий, можно использовать в менеджерах
 	 * @return список препятствий и декораций
 	 */
-	synchronized final public List<Sprite> getSprites(){
+	final public List<Sprite> getSprites(){
 		return sprites;
 	}
 	
