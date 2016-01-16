@@ -22,19 +22,19 @@ final public class GameMap extends Canvas {
 	private static final String NEW_GAME_HINT = "Нажмите Enter, чтобы начать заново.";
 	private static final int DEFAULT_GROUND_HEIGHT = 180;
 	private static final String INIT_MAP_USING_NULL_LISTS = "Инициализация карты проводится на основе объектов игрового цикла, вызывайте инициализацию после добавления объектов в игровой цикл";
-	public static final String SCORE = "СЧЁТ : ";
-	public static final String RECORD = " РЕКОРД : ";
-	public static final String NEW_RECORD = " НОВЫЙ РЕКОРД!";
+	private static final String SCORE = "СЧЁТ : ";
+	private static final String RECORD = " РЕКОРД : ";
+	private static final String NEW_RECORD = " НОВЫЙ РЕКОРД!";
 	private static GameMap instance;
 	public final static Image TREE_IMAGE = new Image(MainWindow.getDisplay(), "./img/tree.png");
 	public final static Image SNOWBALL_IMAGE = new Image(MainWindow.getDisplay(), "./img/snowball.png");
 	public final static Image FIRE_IMAGE = new Image(MainWindow.getDisplay(), "./img/fire.png");
 	public final static Image SNOWDRIFT_IMAGE = new Image(MainWindow.getDisplay(), "./img/snowdrift.png");
-	public final static Image STATIC_BACK = new Image(MainWindow.getDisplay(), "./img/static_back_1_winter.png");
+	private final static Image STATIC_BACK = new Image(MainWindow.getDisplay(), "./img/static_back_1_winter.png");
 	public final static Image BACK_1 = new Image(MainWindow.getDisplay(), "./img/back_1_winter.png");
 	public final static Image BACK_2 = new Image(MainWindow.getDisplay(), "./img/back_2_winter.png");
 	private final List<Sprite> objects = new ArrayList<>();
-	private Comparator<Sprite> spriteComparator =
+	private final Comparator<Sprite> spriteComparator =
 			(o1, o2) -> o1.getZLevel() == o2.getZLevel()?0:
         				o1.getZLevel() > o2.getZLevel()? -1: 1;
 	
@@ -75,9 +75,9 @@ final public class GameMap extends Canvas {
 	private final static Image PAUSE = new Image(Display.getCurrent(), "./img/text/standard/pause.png");
 	private final static Image GAME_OVER = new Image(Display.getCurrent(), "./img/game_over_shell.png");
 	
-	private static Color blue = new Color(Display.getCurrent(), 102, 204, 255);
-	private static Color snowColor = new Color(Display.getCurrent(), 223, 236, 248);
-	public static Color red = new Color(Display.getCurrent(), 255, 0, 0);
+	private static final Color blue = new Color(Display.getCurrent(), 102, 204, 255);
+	private static final Color snowColor = new Color(Display.getCurrent(), 223, 236, 248);
+	private static final Color red = new Color(Display.getCurrent(), 255, 0, 0);
 	
 	private int userRecord;
 	

@@ -18,9 +18,9 @@ import ru.ivanov_chkadua.game.ui.MainWindow;
  *
  */
 public class Sprite implements Executor{
-	private Rectangle placement;
-	private ArrayList<Sprite> children;
-	protected Image img;
+	private final Rectangle placement;
+	private final ArrayList<Sprite> children;
+	Image img;
 	private boolean changeImageSize = true;
 	private boolean interactive = false;
 	private boolean movable = true;
@@ -28,8 +28,8 @@ public class Sprite implements Executor{
 	private boolean bounce = false;
 	private double ZLevel = 1;
 	private int lostSpeed = 0;
-	protected double XSpeed = 0;
-	protected double YSpeed = 0;
+	double XSpeed = 0;
+	double YSpeed = 0;
 	private double weightRatio = 0;
 
 	/**
@@ -183,14 +183,14 @@ public class Sprite implements Executor{
 	 * Определяет находится ли спрайт на уровне земли (y = 0)
 	 * @return true, если спрайт на уровне земли, false иначе
 	 */
-	final protected boolean onGroundLevel(){
+	final boolean onGroundLevel(){
 		return placement.y <= 0;
 	}
 	
 	/**
 	 * Перемещает спрайт на уровень земли
 	 */
-	final protected void alignLevel(){
+	private void alignLevel(){
 		placement.y = 0;
 	}
 	

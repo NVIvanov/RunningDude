@@ -15,8 +15,8 @@ import org.eclipse.swt.widgets.Shell;
  * Окно информации
  * @author n_ivanov
  */
-public class InfoWindow{
-    Shell shell;
+class InfoWindow{
+    private final Shell shell;
 
     /**
      * Конструктор окна информации по умолчанию

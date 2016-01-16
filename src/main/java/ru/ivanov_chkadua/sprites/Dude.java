@@ -17,7 +17,10 @@ import ru.ivanov_chkadua.game.GameMap;
 public class Dude extends Sprite{
 	private static final int START_SPEED_X = 18;
 	private static final int START_SPEED_Y = 22;
-	private Command jump, run, stop, roll;
+	private final Command jump;
+	private final Command run;
+	private final Command stop;
+	private final Command roll;
 	private int runImageIndex = 0, jumpImageIndex = 0, rollImageIndex = 0;
 	private boolean jumping, rolling, running;
 	private int passed = 0;

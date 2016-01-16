@@ -15,7 +15,7 @@ import java.util.List;
  * Класс для генерации набора блоков препятствий из JSON
  * @author Anton_Chkadua
  */
-public class BlockReader {
+class BlockReader {
 
     /**
      * Метод получения списка блоков из входящего потока

@@ -35,7 +35,7 @@ public class GameLoop{
 	private List<Sprite> sprites;
 	private List<Back> backgrounds;
 	private List<Sprite> blockInstances;
-	private ArrayList<Manager> managers;
+	private final ArrayList<Manager> managers;
 	private boolean alive = true;
 	private boolean pause = false;
 	private static KeyListener mainListener, pauseListener;
@@ -63,14 +63,12 @@ public class GameLoop{
 	 * @param objects список объектов, в котором можно хранить декорации и препятствия
 	 * @param backgrounds список фонов
 	 * @param blockInstances набор блоков препятствий
-     * @return объект игровго цикла
 	 */
-	final public GameLoop putObjects(List<Dude> players, List<Sprite> objects, List<Back> backgrounds, List<Sprite> blockInstances){
+	final public void putObjects(List<Dude> players, List<Sprite> objects, List<Back> backgrounds, List<Sprite> blockInstances){
 		sprites = objects;
 		this.players = players;
 		this.backgrounds = backgrounds;
         this.blockInstances = blockInstances;
-		return this;
 	}
 	
 	/**
@@ -128,11 +126,9 @@ public class GameLoop{
 	/**
 	 * Добавляет менеджер в список менеджеров игрового цикла
 	 * @param manager добавляемый менеджер
-	 * @return объект игрового цикла
 	 */
-	final public GameLoop addManager(Manager manager){
+	final public void addManager(Manager manager){
 		managers.add(manager);
-		return this;
 	}
 	
 	/**
