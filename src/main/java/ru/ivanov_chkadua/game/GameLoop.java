@@ -194,11 +194,13 @@ public class GameLoop{
 	 */
 	final public void stop(){
 		alive = false;
-        players.forEach(Dude::stop);
-		saveScore();
-		MainWindow.getShell().removeKeyListener(mainListener);
-		MainWindow.getShell().removeKeyListener(pauseListener);
-		managers.clear();
+        if (players != null){
+            players.forEach(Dude::stop);
+            saveScore();
+            MainWindow.getShell().removeKeyListener(mainListener);
+            MainWindow.getShell().removeKeyListener(pauseListener);
+            managers.clear();
+        }
 	}
 
 	private void saveScore() {

@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
+import ru.ivanov_chkadua.game.GameLoop;
 import ru.ivanov_chkadua.game.GameMap;
 
 import static ru.ivanov_chkadua.game.GameLoop.*;
@@ -75,44 +76,69 @@ public class MainWindow {
 		final Image easyModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/easy.png");
 		final Image mediumModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/medium.png");
 		final Image hardModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/hard.png");
+        Image infoImage = new Image(Display.getCurrent(), "./img/question_mark.png");
 		
 		Color white = new Color(display, 255, 255, 255);
 		shell.setBackground(white);
-		
-		final Label start = new Label(shell, SWT.BOTTOM);
+
+        final Label info = new Label(shell, SWT.NONE);
+        info.setImage(infoImage);
+        info.setBackground(white);
+        GridData infoGridData = new GridData(SWT.RIGHT, SWT.TOP, true, true);
+        info.setLayoutData(infoGridData);
+
+		final Label start = new Label(shell, SWT.NONE);
 		start.setBackground(white);
 		start.setImage(startNormal);
-		GridData gridData = new GridData(SWT.CENTER, SWT.BOTTOM, true, true);
-		gridData.widthHint = SWT.DEFAULT;
-		gridData.heightHint = SWT.DEFAULT;
-		gridData.horizontalSpan = 3;
-		start.setLayoutData(gridData);
+		GridData startLabelGridData = new GridData(SWT.CENTER, SWT.BOTTOM, true, true);
+		startLabelGridData.widthHint = SWT.DEFAULT;
+		startLabelGridData.heightHint = SWT.DEFAULT;
+		startLabelGridData.horizontalSpan = 3;
+		start.setLayoutData(startLabelGridData);
 		
-		final Label easy = new Label(shell, SWT.BOTTOM);
+		final Label easy = new Label(shell, SWT.NONE);
 		easy.setBackground(white);		
 		easy.setImage(easyModeNormal);
 		
-		final Label normal = new Label(shell, SWT.BOTTOM);
+		final Label normal = new Label(shell, SWT.NONE);
 		normal.setBackground(white);
 		normal.setImage(mediumModeNormal);
 		
 		
-		final Label hard = new Label(shell, SWT.BOTTOM);
+		final Label hard = new Label(shell, SWT.NONE);
 		hard.setBackground(white);
 		hard.setImage(hardModeNormal);
 
-		final Label user = new Label(shell, SWT.BOTTOM);
+		final Label user = new Label(shell, SWT.NONE);
 		user.setBackground(white);
 		user.setImage(mediumModeNormal);
 		
-		GridData gridData2 = new GridData(SWT.LEFT, SWT.BOTTOM, true, true);
-		gridData2.widthHint = SWT.MAX;
-		gridData2.heightHint = 95;
-		easy.setLayoutData(gridData2);
-		normal.setLayoutData(gridData2);
-		hard.setLayoutData(gridData2);
-		user.setLayoutData(gridData2);
-		
+		GridData DifficultyGridData = new GridData(SWT.LEFT, SWT.BOTTOM, true, true);
+		DifficultyGridData.widthHint = SWT.MAX;
+		DifficultyGridData.heightHint = 95;
+		easy.setLayoutData(DifficultyGridData);
+		normal.setLayoutData(DifficultyGridData);
+		hard.setLayoutData(DifficultyGridData);
+		user.setLayoutData(DifficultyGridData);
+
+        info.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseDoubleClick(MouseEvent mouseEvent) {
+
+            }
+
+            @Override
+            public void mouseDown(MouseEvent mouseEvent) {
+
+            }
+
+            @Override
+            public void mouseUp(MouseEvent mouseEvent) {
+                InfoWindow infoWindow = new InfoWindow();
+                infoWindow.open();
+            }
+        });
+
 		easy.addMouseListener(new MouseListener() {
 			
 			@Override
@@ -202,6 +228,7 @@ public class MainWindow {
 				normal.dispose();
 				hard.dispose();
 				user.dispose();
+                info.dispose();
 				shell.setLayout(new FillLayout());
 				shell.addKeyListener(new KeyListener() {
 					
@@ -250,9 +277,7 @@ public class MainWindow {
 		shell.setLayout(layout);
 		shell.setMaximized(true);
 		shell.addDisposeListener(e -> {
-			if (getGameLoop().isAlive()) {
-				getGameLoop().stop();
-			}
+            getGameLoop().stop();
 			if (GameMap.getInstance() != null) {
 				GameMap.disposeResources();
 				GameMap.getInstance().dispose();
