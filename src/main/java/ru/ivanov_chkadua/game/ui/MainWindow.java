@@ -15,7 +15,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import ru.ivanov_chkadua.game.BlockReader;
 import ru.ivanov_chkadua.game.GameMap;
+import ru.ivanov_chkadua.sprites.Sprite;
+
+import java.io.IOException;
+import java.util.List;
 
 import static ru.ivanov_chkadua.game.GameLoop.*;
 
@@ -29,6 +34,7 @@ public class MainWindow {
 	private static Display display;
 	private static Difficulty difficulty = Difficulty.EASY;
 	private static String blockSequenceFileName;
+	private static List<Sprite> blockSequence;
 	
 	/**
 	 * Метод получения кэшированного объекта Shell
@@ -233,6 +239,12 @@ public class MainWindow {
                     MessageDialog.openError(shell, "Ошибка", "Если выбираете пользовательский режим, вам надо указать файл с набором блоков препятствий (см. документацию).");
                     return;
                 }
+				try {
+					blockSequence = new BlockReader().getBlocksList(blockSequenceFileName);
+				} catch (Exception e1) {
+					MessageDialog.openError(shell, "Ошибка", "Выберите подходящий файл для генерации блоков (См. документацию).");
+                    return;
+				}
                 startNormal.dispose();
                 easyModeSelected.dispose();
                 easyModeNormal.dispose();
@@ -257,7 +269,7 @@ public class MainWindow {
 						case 13:
 							getGameLoop().stop();
 							GameMap.getInstance().dispose();
-							prepareAndStartGame(difficulty, blockSequenceFileName);
+							prepareAndStartGame(difficulty, blockSequence);
 							break;
 						}
 					}
@@ -265,9 +277,9 @@ public class MainWindow {
 					@Override
 					public void keyPressed(KeyEvent e) {}
 				});
-				prepareAndStartGame(difficulty, blockSequenceFileName);
+				prepareAndStartGame(difficulty, blockSequence);
 			}
-			
+
 			private String getFileNameUsingDifficulty(){
 				switch (difficulty){
 					case EASY:

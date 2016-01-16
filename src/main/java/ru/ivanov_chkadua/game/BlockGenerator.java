@@ -65,10 +65,8 @@ final public class BlockGenerator implements Manager{
 			if (GameLoop.getGameLoop().getBlockInstances().size() != 0){
 			int rem = rand % GameLoop.getGameLoop().getBlockInstances().size();
 				Sprite newBlock = new Sprite(GameLoop.getGameLoop().getBlockInstances().get(rem));
-                System.out.println(lastBlockBounds.width + lastBlockBounds.x + standardOffset);
 				newBlock.replace(lastBlockBounds.width + lastBlockBounds.x + standardOffset, 0);
 				GameLoop.getGameLoop().addSprite(newBlock);
-                System.out.println(newBlock.toString() + " Width: " + newBlock.bounds().width);
 			}
 		}
 	}

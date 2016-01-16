@@ -15,15 +15,15 @@ import java.util.List;
  * Класс для генерации набора блоков препятствий из JSON
  * @author Anton_Chkadua
  */
-class BlockReader {
+public class BlockReader {
 
     /**
      * Метод получения списка блоков из входящего потока
      * @param is входящий поток
      * @return список блоков
-     * @throws IOException если произошла ошибка считывания из потока.
+     * @throws Exception если произошла ошибка считывания из потока.
      */
-    public List<Sprite> getBlocksList(InputStream is) throws IOException {
+    public List<Sprite> getBlocksList(InputStream is) throws Exception {
         List<Sprite> blocks = new ArrayList<>();
         JsonReader reader = new JsonReader(new InputStreamReader(is));
         reader.setLenient(true);
@@ -40,7 +40,6 @@ class BlockReader {
             }
             reader.endObject();
             blocks.add(block);
-            System.out.println(block.toString());
         }
         reader.endArray();
         return blocks;
@@ -58,7 +57,7 @@ class BlockReader {
      * @return список препятствий
      * @throws IOException если при считывании из файла произошла ошибка
      */
-    public List<Sprite> getBlocksList(String fileName) throws IOException {
+    public List<Sprite> getBlocksList(String fileName) throws Exception {
         try (FileInputStream file = new FileInputStream(fileName)) {
             return getBlocksList(file);
         }

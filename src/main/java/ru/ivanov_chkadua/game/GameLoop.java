@@ -6,9 +6,10 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Display;
 import ru.ivanov_chkadua.game.ui.MainWindow;
-import ru.ivanov_chkadua.sprites.*;
+import ru.ivanov_chkadua.sprites.Back;
+import ru.ivanov_chkadua.sprites.Dude;
+import ru.ivanov_chkadua.sprites.Sprite;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -234,9 +235,9 @@ public class GameLoop{
 	 * Инициализирует игровой цикл по умолчанию, устанавливает стандартный набор объектов и менеджеров.
 	 * @param difficulty уровень сложности, может использоваться в любом пользовательском менеджере, по умолчанию используется
 	 * в менеджере генерации блоков препятствий.
-     * @param filename путь к файлу, где записан набор блоков препятствий
+     * @param blockInstances Экземпляры блоков для генерации
 	 */
-	public static void prepareAndStartGame(Difficulty difficulty, String filename){
+	public static void prepareAndStartGame(Difficulty difficulty, List<Sprite> blockInstances){
 		final Dude dude = new Dude();
 		
 		ArrayList<Dude> players = new ArrayList<>();
@@ -249,15 +250,6 @@ public class GameLoop{
         for (int i = 0; i < 5; i++){
             Back newBack = new Back(backgrounds.get(i), GameMap.BACK_1);
             backgrounds.add(newBack);
-        }
-
-		BlockReader reader = new BlockReader();
-		List<Sprite> blockInstances;
-        try {
-            blockInstances = reader.getBlocksList(filename);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
         }
 
         ArrayList<Sprite> sprites = new ArrayList<>();

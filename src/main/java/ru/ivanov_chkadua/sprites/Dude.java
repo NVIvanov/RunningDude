@@ -106,8 +106,6 @@ public class Dude extends Sprite{
 		roll = () -> {
             if (rolling || jumping || !isRunning())
                 return;
-			System.out.println(running);
-			System.out.println(rollImageIndex);
             rolling = true;
             moveUpPoints(-50);
             TimerTask roll1 = new TimerTask(){
