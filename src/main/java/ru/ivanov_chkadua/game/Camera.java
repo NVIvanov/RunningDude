@@ -3,9 +3,9 @@ package ru.ivanov_chkadua.game;
 import ru.ivanov_chkadua.sprites.Sprite;
 
 /**
- * 
- * @author n_ivanov
  * Игровая камера
+ * @author n_ivanov
+ *
  */
 public class Camera implements Manager {
 	private Sprite spy;

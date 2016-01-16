@@ -15,8 +15,8 @@ import ru.ivanov_chkadua.game.GameMap;
  *
  */
 public class Dude extends Sprite{
-	private static final int START_SPEED_X = 35;
-	private static final int START_SPEED_Y = 25;
+	private static final int START_SPEED_X = 18;
+	private static final int START_SPEED_Y = 22;
 	private Command jump, run, stop, roll;
 	private int runImageIndex = 0, jumpImageIndex = 0, rollImageIndex = 0;
 	private boolean jumping, rolling, running;
@@ -103,6 +103,8 @@ public class Dude extends Sprite{
 		roll = () -> {
             if (rolling || jumping || !isRunning())
                 return;
+			System.out.println(running);
+			System.out.println(rollImageIndex);
             rolling = true;
             moveUpPoints(-50);
             TimerTask roll1 = new TimerTask(){
@@ -125,11 +127,21 @@ public class Dude extends Sprite{
 
             };
 
+            TimerTask updateImage = new TimerTask() {
+                @Override
+                public void run() {
+                    if (running && rolling && !GameLoop.getGameLoop().isPause()){
+                        img = GameMap.DUDE_ROLL[rollImageIndex++ % GameMap.DUDE_ROLL.length];
+                    }
+                }
+            };
+
             TimerTask standBack = new TimerTask(){
 
                 @Override
                 public void run() {
                     moveUpPoints(50);
+                    updateImage.cancel();
                     rolling = false;
                     rollImageIndex = 0;
                 }
@@ -137,23 +149,11 @@ public class Dude extends Sprite{
             };
 
             Timer timer = new Timer();
-            timer.schedule(roll1, 400);
-            timer.schedule(halfStand, 600);
-            timer.schedule(standBack, 800);
+            timer.schedule(roll1, 350);
+            timer.schedule(halfStand, 500);
+            timer.schedule(standBack, 650);
 
-            new Timer().schedule(new TimerTask() {
-
-                @Override
-                public void run() {
-					//System.out.println("Таймер смены изображения переката");
-                    if (running && rolling && !GameLoop.getGameLoop().isPause()){
-                        img = GameMap.DUDE_ROLL[rollImageIndex++ % GameMap.DUDE_ROLL.length];
-                    }else if (!rolling){
-                        rollImageIndex = 0;
-                        cancel();
-                    }
-                }
-            }, 0, 70);
+            new Timer().schedule(updateImage, 0, 55);
         };
 	}
 	

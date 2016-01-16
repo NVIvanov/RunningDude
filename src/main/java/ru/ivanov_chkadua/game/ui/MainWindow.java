@@ -1,14 +1,20 @@
 package ru.ivanov_chkadua.game.ui;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
-import ru.ivanov_chkadua.game.GameLoop;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import ru.ivanov_chkadua.game.GameMap;
 
 import static ru.ivanov_chkadua.game.GameLoop.*;
@@ -49,6 +55,7 @@ public class MainWindow {
 		shell = new Shell(display);
 		
 		setupMainMenu();
+		shell.setText("Running Dude");
 		shell.open();
 		
 		while (!shell.isDisposed()){
@@ -65,17 +72,15 @@ public class MainWindow {
 	 * Создает главное меню игры
 	 */
 	private static void setupMainMenu() {
-		Image startNormal = new Image(Display.getCurrent(), "./img/text/standart/start.png");
-		final Image easyModeNormal = new Image(Display.getCurrent(), "./img/text/standart/easy.png");
-		final Image mediumModeNormal = new Image(Display.getCurrent(), "./img/text/standart/medium.png");
-		final Image hardModeNormal = new Image(Display.getCurrent(), "./img/text/standart/hard.png");
-//		Image startPointed = new Image(Display.getCurrent(), "./img/text/on_point/start.png");
-//		Image easyModePointed = new Image(Display.getCurrent(), "./img/text/on_point/easy.png");
-//		Image mediumModePointed = new Image(Display.getCurrent(), "./img/text/on_point/medium.png");
-//		Image hardModePointed = new Image(Display.getCurrent(), "./img/text/on_point/hard.png");
+		Image startNormal = new Image(Display.getCurrent(), "./img/text/standard/start.png");
+		final Image easyModeNormal = new Image(Display.getCurrent(), "./img/text/standard/easy.png");
+		final Image mediumModeNormal = new Image(Display.getCurrent(), "./img/text/standard/medium.png");
+		final Image hardModeNormal = new Image(Display.getCurrent(), "./img/text/standard/hard.png");
+		final Image userModeNormal = new Image(Display.getCurrent(), "./img/text/standard/user.png");
 		final Image easyModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/easy.png");
 		final Image mediumModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/medium.png");
 		final Image hardModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/hard.png");
+		final Image userModeSelected = new Image(Display.getCurrent(), "./img/text/on_click/user.png");
         Image infoImage = new Image(Display.getCurrent(), "./img/question_mark.png");
 		
 		Color white = new Color(display, 255, 255, 255);
@@ -111,7 +116,7 @@ public class MainWindow {
 
 		final Label user = new Label(shell, SWT.NONE);
 		user.setBackground(white);
-		user.setImage(mediumModeNormal);
+		user.setImage(userModeNormal);
 		
 		GridData DifficultyGridData = new GridData(SWT.LEFT, SWT.BOTTOM, true, true);
 		DifficultyGridData.widthHint = SWT.MAX;
@@ -147,7 +152,7 @@ public class MainWindow {
 				easy.setImage(easyModeSelected);
 				normal.setImage(mediumModeNormal);
 				hard.setImage(hardModeNormal);
-				user.setImage(mediumModeNormal);
+				user.setImage(userModeNormal);
 			}
 			
 			@Override
@@ -165,7 +170,7 @@ public class MainWindow {
 				easy.setImage(easyModeNormal);
 				normal.setImage(mediumModeSelected);
 				hard.setImage(hardModeNormal);
-				user.setImage(mediumModeNormal);
+				user.setImage(userModeNormal);
 			}
 
 			@Override
@@ -185,7 +190,7 @@ public class MainWindow {
 				easy.setImage(easyModeNormal);
 				normal.setImage(mediumModeNormal);
 				hard.setImage(hardModeSelected);
-				user.setImage(mediumModeNormal);
+				user.setImage(userModeNormal);
 			}
 
 			@Override
@@ -203,7 +208,7 @@ public class MainWindow {
 				easy.setImage(easyModeNormal);
 				normal.setImage(mediumModeNormal);
 				hard.setImage(hardModeNormal);
-				user.setImage(mediumModeSelected);
+				user.setImage(userModeSelected);
                 difficulty = Difficulty.USER;
                 blockSequenceFileName = new FileDialog(shell).open();
 			}
@@ -223,6 +228,20 @@ public class MainWindow {
 			
 			@Override
 			public void mouseUp(MouseEvent e) {
+                blockSequenceFileName = getFileNameUsingDifficulty();
+                if (blockSequenceFileName == null){
+                    MessageDialog.openError(shell, "Ошибка", "Если выбираете пользовательский режим, вам надо указать файл с набором блоков препятствий (см. документацию).");
+                    return;
+                }
+                startNormal.dispose();
+                easyModeSelected.dispose();
+                easyModeNormal.dispose();
+                mediumModeNormal.dispose();
+                mediumModeSelected.dispose();
+                hardModeNormal.dispose();
+                hardModeSelected.dispose();
+                userModeNormal.dispose();
+                userModeSelected.dispose();
 				start.dispose();
 				easy.dispose();
 				normal.dispose();
@@ -246,7 +265,6 @@ public class MainWindow {
 					@Override
 					public void keyPressed(KeyEvent e) {}
 				});
-                blockSequenceFileName = getFileNameUsingDifficulty();
 				prepareAndStartGame(difficulty, blockSequenceFileName);
 			}
 			

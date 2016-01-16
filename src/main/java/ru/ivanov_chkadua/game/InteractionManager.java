@@ -16,7 +16,10 @@ public class InteractionManager implements Manager{
 	public void manage() {
 		if (GameLoop.getGameLoop().isAlive())
 			for (Sprite dude : GameLoop.getGameLoop().getPlayers())
-				GameLoop.getGameLoop().getSprites().stream().filter(object -> object.overlaps(dude) && object.isInteractive())
-						.forEach(object -> GameLoop.getGameLoop().stop());
+				for (int i = 0; i < GameLoop.getGameLoop().getSprites().size(); i++) {
+					Sprite object = GameLoop.getGameLoop().getSprites().get(i);
+					if (object.isInteractive() && object.overlaps(dude))
+						GameLoop.getGameLoop().stop();
+				}
 	}
 }

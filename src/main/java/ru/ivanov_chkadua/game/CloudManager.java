@@ -6,9 +6,8 @@ import java.util.TimerTask;
 
 import ru.ivanov_chkadua.sprites.Cloud;
 /**
- * 
+ * Менеджер облаков
  * @author n_ivanov
- * Менеджер облаков, добавляет облака
  */
 final public class CloudManager implements Manager {
 	private boolean launched = false;

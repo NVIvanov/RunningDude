@@ -5,8 +5,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import ru.ivanov_chkadua.game.GameMap;
 
 /**
+ * Куст
  * @author Anton_Chkadua
- * Сугроб.
  */
 
 public class Snowdrift extends Sprite {

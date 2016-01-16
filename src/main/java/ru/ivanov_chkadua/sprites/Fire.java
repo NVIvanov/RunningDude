@@ -5,8 +5,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import ru.ivanov_chkadua.game.GameMap;
 
 /**
- * @author Anton_Chkadua
  * Костёр
+ * @author Anton_Chkadua
  */
 public class Fire extends Sprite{
     public Fire() {

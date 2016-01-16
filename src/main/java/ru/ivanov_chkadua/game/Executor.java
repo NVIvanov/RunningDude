@@ -1,8 +1,7 @@
 package ru.ivanov_chkadua.game;
 /**
- * 
+ * Интерфейс - исполнитель команд.
  * @author n_ivanov
- * Интерфейс - исполнитель команд
  */
 public interface Executor {
 	/**

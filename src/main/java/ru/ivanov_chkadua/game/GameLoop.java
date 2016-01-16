@@ -16,12 +16,16 @@ import java.util.TimerTask;
 import java.util.prefs.Preferences;
 
 /**
- * 
- * @author n_ivanov
  * Игровой цикл. Основное хранилище всех игровых объектов. При старте запускает работу всех установленных менеджеров и игровой сцены.
  * Кэшируется в памяти, но создается заново при перезапуске игры.
+ * @author n_ivanov
+ *
  */
 public class GameLoop{
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
     public enum Difficulty{
         EASY, MEDIUM, HARD, USER
     }
@@ -36,6 +40,8 @@ public class GameLoop{
 	private boolean pause = false;
 	private static KeyListener mainListener, pauseListener;
 	private boolean firstStart = true;
+    private Difficulty difficulty;
+
 
 	private GameLoop(){
 		managers = new ArrayList<>();
@@ -115,9 +121,8 @@ public class GameLoop{
 	 * Инициализирует игровую сцену, инициализирует список объектов игровой сцены
 	 * @return объект игрового цикла
 	 */
-	final public GameLoop buildMap(){
-		GameMap.buildMap(players, sprites, backgrounds);
-		return this;
+	final public GameMap buildMap(){
+		return GameMap.buildMap(players, sprites, backgrounds);
 	}
 	
 	/**
@@ -166,27 +171,38 @@ public class GameLoop{
 		firstStart = false;
 		
 	}
-	
+
+    /**
+     * Ставит игру на паузу
+     */
 	final public void pause(){
 		pause = true;
 		alive = false;
 		MainWindow.getShell().removeKeyListener(mainListener);
 	}
-	
+
+    /**
+     * Продолжает игру после паузы
+     */
 	final public void resume(){
 		start();
 		pause = false;
 		MainWindow.getShell().addKeyListener(mainListener);
 	}
-	
-	
-	public boolean isPause() {
+
+    /**
+     * Определяет, стоит ли игра на паузе
+     * @return флаг паузы
+     */
+	final public boolean isPause() {
 		return pause;
 	}
 
-	private void moveSprites(){
+	@SuppressWarnings("ForLoopReplaceableByForEach")
+    private void moveSprites(){
 		players.forEach(Dude::move);
-		sprites.forEach(Sprite::move);
+        for (int i = 0; i < sprites.size(); i++)
+		    sprites.get(i).move();
 	}
 	
 	/**
@@ -196,18 +212,18 @@ public class GameLoop{
 		alive = false;
         if (players != null){
             players.forEach(Dude::stop);
-            saveScore();
+            saveScore(difficulty);
             MainWindow.getShell().removeKeyListener(mainListener);
             MainWindow.getShell().removeKeyListener(pauseListener);
             managers.clear();
         }
 	}
 
-	private void saveScore() {
+	private void saveScore(Difficulty difficulty) {
 		int score = getPlayers().get(0).getPassed() / 10;
-		int record = Preferences.userRoot().node("dude_score").getInt("score", 0);
+		int record = Preferences.userRoot().node("dude_score").getInt("score" + difficulty.name(), 0);
 		if (score > record)
-			Preferences.userRoot().node("dude_score").putInt("score", score);
+			Preferences.userRoot().node("dude_score").putInt("score" + difficulty.name(), score);
 	}
 	
 	
@@ -220,24 +236,12 @@ public class GameLoop{
 	}
 	/**
 	 * Инициализирует игровой цикл по умолчанию, устанавливает стандартный набор объектов и менеджеров.
-	 * Чтобы создать игровой цикл по собственным правилам, нужно унаследовать класс GameLoop и 
-	 * переопределить этот метод в соответствии с обозначенными правилами запуска цикла и внедрения менеджеров.
 	 * @param difficulty уровень сложности, может использоваться в любом пользовательском менеджере, по умолчанию используется
 	 * в менеджере генерации блоков препятствий.
+     * @param filename путь к файлу, где записан набор блоков препятствий
 	 */
 	public static void prepareAndStartGame(Difficulty difficulty, String filename){
 		final Dude dude = new Dude();
-		Sprite block = new BlockOfTreeTrees();
-		block.replace(600, 0);
-		Sprite block1 = new BlockTwoStonesOneTree();
-		block1.replace(block.bounds().x + block.bounds().width + 1000, 0);
-		Sprite block2 = new BlockOfThreeSnowballs();
-		block2.replace(block1.bounds().x + block1.bounds().width + 1000, 0);
-		
-		ArrayList<Sprite> sprites = new ArrayList<>();
-		sprites.add(block);
-		sprites.add(block1);
-		sprites.add(block2);
 		
 		ArrayList<Dude> players = new ArrayList<>();
 		players.add(dude);
@@ -246,14 +250,10 @@ public class GameLoop{
 		Back back = new Back(GameMap.BACK_1);
 		back.replace(-100, 0);
 		backgrounds.add(back);
-		Back back1 = new Back(back, GameMap.BACK_2);
-		backgrounds.add(back1);
-		Back back2 = new Back(back1, GameMap.BACK_1);
-		backgrounds.add(back2);
-		Back back3 = new Back(back2, GameMap.BACK_1);
-		backgrounds.add(back3);
-		Back back4 = new Back(back3, GameMap.BACK_2);
-		backgrounds.add(back4);
+        for (int i = 0; i < 5; i++){
+            Back newBack = new Back(backgrounds.get(i), GameMap.BACK_1);
+            backgrounds.add(newBack);
+        }
 
 		BlockReader reader = new BlockReader();
 		List<Sprite> blockInstances;
@@ -264,15 +264,24 @@ public class GameLoop{
             return;
         }
 
+        ArrayList<Sprite> sprites = new ArrayList<>();
+
+        for (int i = 0; i < blockInstances.size() && i < 4; i++){
+            Sprite block = new Sprite(blockInstances.get(i));
+            sprites.add(block);
+            block.replace(i > 0? sprites.get(i-1).bounds().x + sprites.get(i-1).bounds().width + 2000: 600, 0);
+        }
+
         GameLoop loop = GameLoop.getGameLoop();
 
+        loop.setDifficulty(difficulty);
 		loop.addManager(new InteractionManager());
 		loop.addManager(new Camera().spy(dude));
 		loop.addManager(new BlockGenerator(difficulty));
 		loop.addManager(new BackgroundGenerator());
 		loop.addManager(new CloudManager());
 		loop.putObjects(players, sprites, backgrounds, blockInstances);
-		loop.buildMap();
+		loop.buildMap().setUserRecord(Preferences.userRoot().node("dude_score").getInt("score" + difficulty.name(), 0));
 		loop.start();
 		
 		new Timer().schedule(new TimerTask() {
@@ -321,11 +330,15 @@ public class GameLoop{
 	 * Возвращает список фонов
 	 * @return список фонов
 	 */
-	synchronized final public List<Back> getBackgrounds() {
+	final public List<Back> getBackgrounds() {
 		return backgrounds;
 	}
 
-    public List<Sprite> getBlockInstances() {
+    /**
+     * Возвращает список блоков препятствий
+     * @return список блоков препятствий
+     */
+    final public List<Sprite> getBlockInstances() {
         return blockInstances;
     }
 }

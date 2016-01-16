@@ -13,7 +13,7 @@ import ru.ivanov_chkadua.game.Executor;
 import ru.ivanov_chkadua.game.ui.MainWindow;
 
 /**
- * Спрайт, обертка класса Polygon с возможностью отрисовки и установки некоторых флагов, по которым происходит его взаимодействие с другими спрайтами
+ * Спрайт, суперкласс всех объектов, задействованных в игровом цикле и на игровой сцене
  * @author n_ivanov
  *
  */
@@ -326,7 +326,7 @@ public class Sprite implements Executor{
 			}else
 				YSpeed = 0;	
 		}else
-			YSpeed -= 4 * weightRatio;
+			YSpeed -= 2 * weightRatio;
 	}
 	
 	/**

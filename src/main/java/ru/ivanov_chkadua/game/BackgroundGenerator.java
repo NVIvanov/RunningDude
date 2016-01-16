@@ -7,9 +7,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import ru.ivanov_chkadua.sprites.Back;
 import ru.ivanov_chkadua.sprites.Sprite;
 /**
- * 
- * @author n_ivanov
  * Менеджер фона
+ * @author n_ivanov
  */
 final public class BackgroundGenerator implements Manager{
 

@@ -1,28 +1,17 @@
 package ru.ivanov_chkadua.game;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.prefs.Preferences;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Transform;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
-
 import ru.ivanov_chkadua.game.ui.MainWindow;
 import ru.ivanov_chkadua.sprites.Back;
 import ru.ivanov_chkadua.sprites.Dude;
 import ru.ivanov_chkadua.sprites.Sprite;
+
+import java.util.*;
 /**
  * Игровая сцена
  * @author n_ivanov
@@ -33,6 +22,9 @@ final public class GameMap extends Canvas {
 	private static final String NEW_GAME_HINT = "Нажмите Enter, чтобы начать заново.";
 	private static final int DEFAULT_GROUND_HEIGHT = 180;
 	private static final String INIT_MAP_USING_NULL_LISTS = "Инициализация карты проводится на основе объектов игрового цикла, вызывайте инициализацию после добавления объектов в игровой цикл";
+	public static final String SCORE = "СЧЁТ : ";
+	public static final String RECORD = " РЕКОРД : ";
+	public static final String NEW_RECORD = " НОВЫЙ РЕКОРД!";
 	private static GameMap instance;
 	public final static Image TREE_IMAGE = new Image(MainWindow.getDisplay(), "./img/tree.png");
 	public final static Image SNOWBALL_IMAGE = new Image(MainWindow.getDisplay(), "./img/snowball.png");
@@ -80,14 +72,14 @@ final public class GameMap extends Canvas {
 	
 	public final static Image BRANCH = new Image(Display.getCurrent(), "./img/branch_winter.png");
 	public final static Image CLOUD = new Image(Display.getCurrent(), "./img/cloud.png");
-	private final static Image PAUSE = new Image(Display.getCurrent(), "./img/text/standart/pause.png");
+	private final static Image PAUSE = new Image(Display.getCurrent(), "./img/text/standard/pause.png");
 	private final static Image GAME_OVER = new Image(Display.getCurrent(), "./img/game_over_shell.png");
 	
 	private static Color blue = new Color(Display.getCurrent(), 102, 204, 255);
 	private static Color snowColor = new Color(Display.getCurrent(), 223, 236, 248);
 	public static Color red = new Color(Display.getCurrent(), 255, 0, 0);
 	
-	private int userRecord = Preferences.userRoot().node("dude_score").getInt("score", 0);
+	private int userRecord;
 	
 	/**
 	 * Инициализирует игровую сцену, устанавливает правила отрисовки. Сцена создает свой список объектов, который содержит те же ссылки, что и списки объектов игрового цикла,
@@ -154,9 +146,9 @@ final public class GameMap extends Canvas {
 				if (GameLoop.getGameLoop().isAlive() || GameLoop.getGameLoop().isPause()){
 					String str;
 					if (userRecord == 0)
-						str = "СЧЁТ : " + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
+						str = SCORE + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
 					else
-						str = "СЧЁТ : " + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10 + " РЕКОРД : " + userRecord;
+						str = SCORE + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10 + RECORD + userRecord;
 					e.gc.drawText(str, 30, 30, true);
 				}
 				
@@ -224,11 +216,11 @@ final public class GameMap extends Canvas {
 
 			private String getScoreMessage() {
 				int currentScore = GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
-				StringBuilder scoreMessage = new StringBuilder("СЧЕТ: " + currentScore);
+				StringBuilder scoreMessage = new StringBuilder(SCORE + currentScore);
 				if (currentScore <= userRecord)
-					scoreMessage.append(" РЕКОРД: ").append(userRecord);
+					scoreMessage.append(RECORD).append(userRecord);
 				else
-					scoreMessage.append(" НОВЫЙ РЕКОРД!");
+					scoreMessage.append(NEW_RECORD);
 				return scoreMessage.toString();
 			}
 
@@ -297,5 +289,13 @@ final public class GameMap extends Canvas {
 	public static GameMap buildMap(List<Dude> players, List<Sprite> sprites, List<Back> backgrounds){
 		instance = new GameMap(players, sprites, backgrounds);
 		return instance;
+	}
+
+	/**
+	 * Устанавливает рекорд пользователя для отображения
+	 * @param userRecord рекорд пользователя
+     */
+	public void setUserRecord(int userRecord) {
+		this.userRecord = userRecord;
 	}
 }
