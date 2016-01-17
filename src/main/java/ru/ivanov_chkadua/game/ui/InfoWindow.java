@@ -1,8 +1,8 @@
 package ru.ivanov_chkadua.game.ui;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.program.Program;
@@ -16,6 +16,12 @@ import org.eclipse.swt.widgets.Shell;
  * @author n_ivanov
  */
 class InfoWindow{
+    public static final String HOW_TO_PLAY = "Управление персонажем: Вверх - прыжок, Вниз - пригнуться, ESC - пауза," +
+            " Enter - новая игра";
+    public static final String PROJECT_AUTHORS = "Над игрой работали: Николай Иванов (NVIvanov) и Антон Чкадуа (AVChkadua).";
+    public static final String LINK_TO_SOURCES_AND_DOC = "Исходники доступны в " +
+            "<a href=\"https://github.com/NVIvanov/RunningDude\">репозитории GitHub." +
+            "</a>. Документация доступна по <a href=\"http://nvivanov.github.io/RunningDude/\">Ссылке</a>";
     private final Shell shell;
 
     /**
@@ -32,20 +38,14 @@ class InfoWindow{
         shell.setLocation(x, y);
         shell.setText("Информация");
 
-        new Label(shell, SWT.WRAP | SWT.CENTER).setText("Управление персонажем: Вверх - прыжок, Вниз - пригнуться, ESC - пауза, Enter - новая игра");
-        new Label(shell, SWT.WRAP | SWT.CENTER).setText("Над игрой работали: Николай Иванов (NVIvanov) и Антон Чкадуа (AVChkadua).");
+        new Label(shell, SWT.WRAP | SWT.CENTER).setText(HOW_TO_PLAY);
+        new Label(shell, SWT.WRAP | SWT.CENTER).setText(PROJECT_AUTHORS);
         Link link = new Link(shell, SWT.WRAP | SWT.BOTTOM);
-        link.setText("Исходники доступны в <a href=\"https://github.com/NVIvanov/RunningDude\">репозитории GitHub." +
-                "</a>. Документация доступна по <a href=\"http://nvivanov.github.io/RunningDude/\">Ссылке</a>");
-        link.addSelectionListener(new SelectionListener() {
+        link.setText(LINK_TO_SOURCES_AND_DOC);
+        link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent selectionEvent) {
                 Program.launch(selectionEvent.text);
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent selectionEvent) {
-
             }
         });
 

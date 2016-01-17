@@ -1,7 +1,6 @@
 package ru.ivanov_chkadua.game;
 
 import com.google.gson.stream.JsonReader;
-import org.eclipse.swt.graphics.Rectangle;
 import ru.ivanov_chkadua.sprites.*;
 
 import java.io.FileInputStream;
@@ -23,14 +22,14 @@ public class BlockReader {
      * @return список блоков
      * @throws Exception если произошла ошибка считывания из потока.
      */
-    public List<Sprite> getBlocksList(InputStream is) throws Exception {
-        List<Sprite> blocks = new ArrayList<>();
+    public List<SpriteContainer> getBlocksList(InputStream is) throws Exception {
+        List<SpriteContainer> blocks = new ArrayList<>();
         JsonReader reader = new JsonReader(new InputStreamReader(is));
         reader.setLenient(true);
         reader.beginArray();
         while (reader.hasNext()) {
             reader.beginObject();
-            Sprite block = new Sprite(new Rectangle(0, 0, 0, 0));
+            SpriteContainer block = new SpriteContainer();
             block.setInteractive(true);
             while (reader.hasNext()) {
                 Integer[] obstacle = readObstacle(reader);
@@ -57,7 +56,7 @@ public class BlockReader {
      * @return список препятствий
      * @throws IOException если при считывании из файла произошла ошибка
      */
-    public List<Sprite> getBlocksList(String fileName) throws Exception {
+    public List<SpriteContainer> getBlocksList(String fileName) throws Exception {
         try (FileInputStream file = new FileInputStream(fileName)) {
             return getBlocksList(file);
         }

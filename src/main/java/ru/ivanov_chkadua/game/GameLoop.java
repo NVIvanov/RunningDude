@@ -9,6 +9,7 @@ import ru.ivanov_chkadua.game.ui.MainWindow;
 import ru.ivanov_chkadua.sprites.Back;
 import ru.ivanov_chkadua.sprites.Dude;
 import ru.ivanov_chkadua.sprites.Sprite;
+import ru.ivanov_chkadua.sprites.SpriteContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class GameLoop{
 	private List<Dude> players;
 	private List<Sprite> sprites;
 	private List<Back> backgrounds;
-	private List<Sprite> blockInstances;
+	private List<SpriteContainer> blockInstances;
 	private final ArrayList<Manager> managers;
 	private boolean alive = true;
 	private boolean pause = false;
@@ -65,7 +66,7 @@ public class GameLoop{
 	 * @param backgrounds список фонов
 	 * @param blockInstances набор блоков препятствий
 	 */
-	final public void putObjects(List<Dude> players, List<Sprite> objects, List<Back> backgrounds, List<Sprite> blockInstances){
+	final public void putObjects(List<Dude> players, List<Sprite> objects, List<Back> backgrounds, List<SpriteContainer> blockInstances){
 		sprites = objects;
 		this.players = players;
 		this.backgrounds = backgrounds;
@@ -121,7 +122,7 @@ public class GameLoop{
 	 * @return объект игрового цикла
 	 */
 	final public GameMap buildMap(){
-		return GameMap.buildMap(players, sprites, backgrounds);
+		return GameMap.Factory.buildMap(players, sprites, backgrounds);
 	}
 	
 	/**
@@ -237,37 +238,22 @@ public class GameLoop{
 	 * в менеджере генерации блоков препятствий.
      * @param blockInstances Экземпляры блоков для генерации
 	 */
-	public static void prepareAndStartGame(Difficulty difficulty, List<Sprite> blockInstances){
+	public static void prepareAndStartGame(Difficulty difficulty, List<SpriteContainer> blockInstances){
 		final Dude dude = new Dude();
 		
 		ArrayList<Dude> players = new ArrayList<>();
 		players.add(dude);
 		
 		ArrayList<Back> backgrounds = new ArrayList<>();
-		Back back = new Back(GameMap.BACK_1);
-		back.replace(-100, 0);
-		backgrounds.add(back);
-        for (int i = 0; i < 5; i++){
-            Back newBack = new Back(backgrounds.get(i), GameMap.BACK_1);
-            backgrounds.add(newBack);
-        }
+		initStartBackgrounds(backgrounds);
 
         ArrayList<Sprite> sprites = new ArrayList<>();
+		initStartBlocks(blockInstances, sprites);
 
-        for (int i = 0; i < blockInstances.size() && i < 4; i++){
-            Sprite block = new Sprite(blockInstances.get(i));
-            sprites.add(block);
-            block.replace(i > 0? sprites.get(i-1).bounds().x + sprites.get(i-1).bounds().width + 2000: 600, 0);
-        }
-
-        GameLoop loop = GameLoop.getGameLoop();
+		GameLoop loop = GameLoop.getGameLoop();
 
         loop.setDifficulty(difficulty);
-		loop.addManager(new InteractionManager());
-		loop.addManager(new Camera().spy(dude));
-		loop.addManager(new BlockGenerator(difficulty));
-		loop.addManager(new BackgroundGenerator());
-		loop.addManager(new CloudManager());
+		initManagers(difficulty, dude, loop);
 		loop.putObjects(players, sprites, backgrounds, blockInstances);
 		loop.buildMap().setUserRecord(Preferences.userRoot().node("dude_score").getInt("score" + difficulty.name(), 0));
 		loop.start();
@@ -286,10 +272,10 @@ public class GameLoop{
 			@Override
 			public void keyPressed(KeyEvent e) {
 				switch (e.keyCode){
-				case 0x1000001:
+				case SWT.ARROW_UP:
 					dude.jump();
 					break;
-				case 0x1000002:
+				case SWT.ARROW_DOWN:
 					dude.roll();
 					break;
 				}
@@ -313,6 +299,32 @@ public class GameLoop{
 		MainWindow.getShell().layout();
 	}
 
+	private static void initManagers(Difficulty difficulty, Dude dude, GameLoop loop) {
+		loop.addManager(new InteractionManager());
+		loop.addManager(new Camera().spy(dude));
+		loop.addManager(new BlockGenerator(difficulty));
+		loop.addManager(new BackgroundGenerator());
+		loop.addManager(new CloudManager());
+	}
+
+	private static void initStartBackgrounds(List<Back> backgrounds) {
+		Back back = new Back(GameMap.BACK_1);
+		back.replace(-100, 0);
+		backgrounds.add(back);
+		for (int i = 0; i < 5; i++){
+            Back newBack = new Back(backgrounds.get(i), GameMap.BACK_1);
+            backgrounds.add(newBack);
+        }
+	}
+
+	private static void initStartBlocks(List<SpriteContainer> blockInstances, List<Sprite> sprites) {
+		for (int i = 0; i < blockInstances.size() && i < 4; i++){
+            SpriteContainer block = new SpriteContainer(blockInstances.get(i));
+            sprites.add(block);
+            block.replace(i > 0? sprites.get(i-1).bounds().x + sprites.get(i-1).bounds().width + 2000: 600, 0);
+        }
+	}
+
 
 	/**
 	 * Возвращает список фонов
@@ -326,7 +338,7 @@ public class GameLoop{
      * Возвращает список блоков препятствий
      * @return список блоков препятствий
      */
-    final public List<Sprite> getBlockInstances() {
+    final public List<SpriteContainer> getBlockInstances() {
         return blockInstances;
     }
 }

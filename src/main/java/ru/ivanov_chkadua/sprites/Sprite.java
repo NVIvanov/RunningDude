@@ -1,13 +1,10 @@
 package ru.ivanov_chkadua.sprites;
 
-import java.util.ArrayList;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-
 import ru.ivanov_chkadua.game.Command;
 import ru.ivanov_chkadua.game.Executor;
 import ru.ivanov_chkadua.game.ui.MainWindow;
@@ -18,8 +15,7 @@ import ru.ivanov_chkadua.game.ui.MainWindow;
  *
  */
 public class Sprite implements Executor{
-	private final Rectangle placement;
-	private final ArrayList<Sprite> children;
+	protected final Rectangle placement;
 	Image img;
 	private boolean changeImageSize = true;
 	private boolean interactive = false;
@@ -39,7 +35,6 @@ public class Sprite implements Executor{
 	 * @param changeImageSize если true, изображение будет сжато до размера полигона, false - изображение будет отображаться в натуральную величину
 	 */
 	public Sprite(Rectangle placement, Image img, boolean changeImageSize){
-		children = new ArrayList<>();
 		this.placement = placement;
 		this.img = img;
 		this.changeImageSize = changeImageSize;
@@ -75,41 +70,15 @@ public class Sprite implements Executor{
         ZLevel = sprite.ZLevel;
         lostSpeed = sprite.lostSpeed;
         weightRatio = sprite.weightRatio;
-		for (int i = 0; i < sprite.children.size(); i++) {
-			addChild(new Sprite(sprite.children.get(i)));
-		}
 	}
-
-	/**
-	 * Добавляет дочерний спрайт. Если добавлен хоть один дочерний спрайт, то методы отрисовки и наложения будут вызываться автоматически для всех дочерних спрайтов, но не для текущего.
-	 * Размещение дочерний спрайтов происходит относительно последнего добавленного, друг за другом.
-	 * @param sprite дочерний спрайт
-	 * @param offsetX смещение относительно предыдущего спрайта
-	 */
-	final public void addChild(Sprite sprite, int offsetX){
-		if (children.size() == 0)
-			sprite.replace(placement.x + offsetX, 0);
-		else
-			sprite.replace(children.get(children.size() - 1).placement.x + offsetX, 0);
-		children.add(sprite);
-	}
-
-    private void addChild(Sprite sprite){
-        children.add(sprite);
-    }
 
 	/**
 	 * метод отрисовки спрайта
 	 * @param e событие отрисовки
 	 */
-	final public void paint(PaintEvent e){
-		if (children.size() == 0)
-			paintComponent(e);
-		else
-			for (Sprite child : children)
-				child.paint(e);
+	public void paint(PaintEvent e){
+		paintComponent(e);
 	}
-
 
 	private void paintComponent(PaintEvent e){
 		if (drawable){
@@ -157,14 +126,8 @@ public class Sprite implements Executor{
 	 * @param other другой спрайт
 	 * @return true, если происходит наложение, false иначе
 	 */
-	final public boolean overlaps(Sprite other){
-		if (children.size() == 0)
-			return placement.intersects(other.placement);
-		boolean overlaps = false;
-		for (Sprite child : children)
-			if (child.overlaps(other) && child.isInteractive())
-				overlaps = true;
-		return overlaps;
+	public boolean overlaps(Sprite other){
+		return placement.intersects(other.placement);
 	}
 	
 	/**
@@ -172,11 +135,9 @@ public class Sprite implements Executor{
 	 * @param x смещение по горизонтали
 	 * @param y смещение по вертикали
 	 */
-	final public void replace(int x, int y){
+	public void replace(int x, int y){
 		placement.x += x;
 		placement.y += y;
-		for (Sprite child: children)
-			child.replace(x, y);
 	}
 
 	/**
@@ -198,34 +159,24 @@ public class Sprite implements Executor{
 	 * Перемещает верхние точки полигона спрайта
 	 * @param y смещение по вертикали
 	 */
-	final protected void moveUpPoints(double y){
+	protected void moveUpPoints(double y){
 		placement.height += y;
-		for (Sprite child : children)
-			child.moveUpPoints(y);
 	}
 	
 	/**
 	 * Перемещает правые точки полигона спрайта
 	 * @param x смещение по горизонтали
 	 */
-	final protected void moveRightPoints(double x){
+	protected void moveRightPoints(double x){
 		placement.width += x;
-		for (Sprite child: children)
-			child.moveRightPoints(x);
 	}
 	
 	/**
 	 * Возвращает Rectangle с координатами и размерами спрайта
 	 * @return объект {@link Rectangle}
 	 */
-	final public Rectangle bounds(){
-		if (children.size() == 0)
-			return placement;
-		else{
-			Rectangle first = children.get(0).bounds();
-			Rectangle last = children.get(children.size() - 1).bounds();
-			return new Rectangle(first.x, first.y, last.x + last.width - first.x, last.height);
-		}
+	public Rectangle bounds(){
+		return placement;
 	}
 
 	/**
@@ -342,12 +293,6 @@ public class Sprite implements Executor{
 
 	@Override
 	public String toString() {
-		if (children.size() != 0){
-			StringBuilder builder = new StringBuilder();
-			for (Sprite child: children)
-				builder.append(child.toString());
-			return builder.toString();
-		}
 		return "Sprite{" + placement.x + ", " + placement.y + "} ";
 	}
 }

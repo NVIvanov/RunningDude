@@ -21,7 +21,8 @@ final public class GameMap extends Canvas {
 	private static final String GAME_OVER_MESSAGE = "КОНЕЦ ИГРЫ";
 	private static final String NEW_GAME_HINT = "Нажмите Enter, чтобы начать заново.";
 	private static final int DEFAULT_GROUND_HEIGHT = 180;
-	private static final String INIT_MAP_USING_NULL_LISTS = "Инициализация карты проводится на основе объектов игрового цикла, вызывайте инициализацию после добавления объектов в игровой цикл";
+	private static final String INIT_MAP_USING_NULL_LISTS = "Инициализация карты проводится на основе объектов" +
+            " игрового цикла, вызывайте инициализацию после добавления объектов в игровой цикл";
 	private static final String SCORE = "СЧЁТ : ";
 	private static final String RECORD = " РЕКОРД : ";
 	private static final String NEW_RECORD = " НОВЫЙ РЕКОРД!";
@@ -78,9 +79,9 @@ final public class GameMap extends Canvas {
 	private static final Color blue = new Color(Display.getCurrent(), 102, 204, 255);
 	private static final Color snowColor = new Color(Display.getCurrent(), 223, 236, 248);
 	private static final Color red = new Color(Display.getCurrent(), 255, 0, 0);
-	
+
 	private int userRecord;
-	
+
 	/**
 	 * Инициализирует игровую сцену, устанавливает правила отрисовки. Сцена создает свой список объектов, который содержит те же ссылки, что и списки объектов игрового цикла,
 	 * но отсортированный по значению глубины отрисовки объекта.
@@ -89,7 +90,8 @@ final public class GameMap extends Canvas {
 	 * @param backgrounds список фонов
 	 */
 	private GameMap(List<Dude> players, List<Sprite> sprites, List<Back> backgrounds){
-		super(MainWindow.getShell(), SWT.DOUBLE_BUFFERED);		
+		super(MainWindow.getShell(), SWT.DOUBLE_BUFFERED);
+        instance = this;
 		try{
 			objects.addAll(players);
 			objects.addAll(sprites);
@@ -98,14 +100,14 @@ final public class GameMap extends Canvas {
 			throw new NullPointerException(INIT_MAP_USING_NULL_LISTS);
 		}
 		objects.sort(spriteComparator);
-		
-		addPaintListener(new PaintListener() {
+
+		PaintListener paintListener = new PaintListener() {
 			private boolean timerTaskScheduled = false;
 			private boolean needShowHint = false;
-			
+
 			@Override
 			public void paintControl(PaintEvent e) {
-				paintBackground(e);			
+				paintBackground(e);
 				paintSprites(e);
 				showStaticElements(e);
 			}
@@ -118,120 +120,39 @@ final public class GameMap extends Canvas {
 			}
 
 			@SuppressWarnings("ForLoopReplaceableByForEach")
-            private void paintSprites(PaintEvent e) {
+			private void paintSprites(PaintEvent e) {
 				Transform tr = new Transform(Display.getCurrent());
-				tr.setElements(1, 0, 0, -1, 0, 0);		
-				tr.translate(0, - MainWindow.getShell().getBounds().height + 150);
+				tr.setElements(1, 0, 0, -1, 0, 0);
+				tr.translate(0, -MainWindow.getShell().getBounds().height + 150);
 				e.gc.setTransform(tr);
-                for (int i = 0; i < objects.size(); i++){
-                    Sprite object = objects.get(i);
-                    if (object.bounds().x + object.bounds().width < -300 && !(object instanceof Dude))
-                        GameLoop.getGameLoop().removeSprite(object);
-                    else
-                        object.paint(e);
-                }
+				for (int i = 0; i < objects.size(); i++) {
+					Sprite object = objects.get(i);
+					if (object.bounds().x + object.bounds().width < -300 && !(object instanceof Dude))
+						GameLoop.getGameLoop().removeSprite(object);
+					else
+						object.paint(e);
+				}
 				tr.dispose();
 			}
 
 			private void showStaticElements(PaintEvent e) {
-				
-				//Подготовка графического контекста
 				e.gc.setTransform(null);
-				Font font = new Font(MainWindow.getDisplay(), new FontData("Tahoma", 20, SWT.NORMAL));
-				Color gold = new Color(MainWindow.getDisplay(), 255, 204, 0);
-				e.gc.setForeground(gold);
-				e.gc.setFont(font);	
-				
-				//Отрисовка текущего счета и рекорда
-				if (GameLoop.getGameLoop().isAlive() || GameLoop.getGameLoop().isPause()){
-					String str;
-					if (userRecord == 0)
-						str = SCORE + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
-					else
-						str = SCORE + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10 + RECORD + userRecord;
-					e.gc.drawText(str, 30, 30, true);
+				GraphicContext context = new GraphicContext(e.gc, timerTaskScheduled, needShowHint);
+				context.printCurrentScoreAndRecord();
+				if (GameLoop.getGameLoop().isPause()) {
+					context.printPauseMessage();
 				}
-				
-				//Отрисовка сообщения о паузе
-				if (GameLoop.getGameLoop().isPause()){
-					int pauseMessageImageWidth = PAUSE.getImageData().width;
-					int pauseMessageImageHeight = PAUSE.getImageData().height;
-					e.gc.drawImage(PAUSE, (GameMap.this.getBounds().width - pauseMessageImageWidth) / 2,
-							(GameMap.this.getBounds().height - pauseMessageImageHeight) / 2);
-				}
-
-				//Отрисовка окна окончания игры
-				if (isGameOver()){
-					drawFieldForMessages(e);
-					
-					String scoreMessage = getScoreMessage();
-					drawScoreMessage(e, scoreMessage);
-					drawGameOverMessage(e);
-					if (!timerTaskScheduled){
-						new Timer().schedule(new TimerTask() {
-							
-							@Override
-							public void run() {
-								if (isGameOver() && !MainWindow.getDisplay().isDisposed())
-									needShowHint = !needShowHint;
-								else
-									cancel();
-							}
-							
-						}, 0, 1000);
-						timerTaskScheduled = true;
-					}
-					if (needShowHint){
-						drawNewGameHint(e);
-					}
-				}
-				
-				
-				font.dispose();
-				gold.dispose();
+				if (isGameOver())
+					context.printGameOverMessage();
+				context.dispose();
 			}
+		};
 
-			private boolean isGameOver() {
-				return !GameLoop.getGameLoop().isAlive() && !GameLoop.getGameLoop().isPause();
-			}
+		addPaintListener(paintListener);
+	}
 
-			private void drawNewGameHint(PaintEvent e) {
-				Point hintMessageBounds = e.gc.textExtent(NEW_GAME_HINT);
-				e.gc.drawText(NEW_GAME_HINT,
-						(GameMap.this.getBounds().width - hintMessageBounds.x) / 2,
-						GameMap.this.getBounds().height / 2 + hintMessageBounds.y + 20, true);
-			}
-
-			private void drawScoreMessage(PaintEvent e, String scoreMessage) {
-				Point scoreMessageBounds = e.gc.textExtent(scoreMessage);
-				e.gc.drawText(scoreMessage, (GameMap.this.getBounds().width - scoreMessageBounds.x) / 2,
-						GameMap.this.getBounds().height / 2 - scoreMessageBounds.y - 10, true);
-			}
-
-			private void drawGameOverMessage(PaintEvent e) {
-				Point gameOverMessageBounds = e.gc.textExtent(GAME_OVER_MESSAGE);
-				e.gc.drawText(GAME_OVER_MESSAGE, (GameMap.this.getBounds().width - gameOverMessageBounds.x) / 2,
-						GameMap.this.getBounds().height / 2, true);
-			}
-
-			private String getScoreMessage() {
-				int currentScore = GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
-				StringBuilder scoreMessage = new StringBuilder(SCORE + currentScore);
-				if (currentScore <= userRecord)
-					scoreMessage.append(RECORD).append(userRecord);
-				else
-					scoreMessage.append(NEW_RECORD);
-				return scoreMessage.toString();
-			}
-
-			private void drawFieldForMessages(PaintEvent e) {
-				int gameOverMessageImageWidth = GAME_OVER.getImageData().width;
-				int gameOverMessageImageHeight = GAME_OVER.getImageData().height;
-				e.gc.drawImage(GAME_OVER, (GameMap.this.getBounds().width - gameOverMessageImageWidth) / 2,
-						(GameMap.this.getBounds().height - gameOverMessageImageHeight) / 2);
-			}
-		});
-		
+	private boolean isGameOver() {
+		return !GameLoop.getGameLoop().isAlive() && !GameLoop.getGameLoop().isPause();
 	}
 	
 	/**
@@ -286,10 +207,7 @@ final public class GameMap extends Canvas {
 	 * @param backgrounds список фонов
 	 * @return объект игровой сцены
 	 */
-	public static GameMap buildMap(List<Dude> players, List<Sprite> sprites, List<Back> backgrounds){
-		instance = new GameMap(players, sprites, backgrounds);
-		return instance;
-	}
+
 
 	/**
 	 * Устанавливает рекорд пользователя для отображения
@@ -298,4 +216,111 @@ final public class GameMap extends Canvas {
 	public void setUserRecord(int userRecord) {
 		this.userRecord = userRecord;
 	}
+
+	class GraphicContext{
+		private GC gc;
+		private Font staticTextFont;
+		private Color staticTextColor;
+		private boolean timerTaskScheduled, needShowHint;
+
+		GraphicContext(GC gc, boolean timerTaskScheduled, boolean needShowHint){
+			this.gc = gc;
+			this.timerTaskScheduled = timerTaskScheduled;
+			this.needShowHint = needShowHint;
+			staticTextFont = new Font(MainWindow.getDisplay(), new FontData("Tahoma", 20, SWT.NORMAL));
+			staticTextColor = new Color(MainWindow.getDisplay(), 255, 204, 0);
+			gc.setForeground(staticTextColor);
+			gc.setFont(staticTextFont);
+		}
+
+		void printCurrentScoreAndRecord() {
+			if (GameLoop.getGameLoop().isAlive() || GameLoop.getGameLoop().isPause()) {
+				String str;
+				if (userRecord == 0)
+					str = SCORE + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
+				else
+					str = SCORE + GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10 + RECORD + userRecord;
+				gc.drawText(str, 30, 30, true);
+			}
+		}
+
+		void printPauseMessage() {
+			int pauseMessageImageWidth = PAUSE.getImageData().width;
+			int pauseMessageImageHeight = PAUSE.getImageData().height;
+			gc.drawImage(PAUSE, (GameMap.this.getBounds().width - pauseMessageImageWidth) / 2,
+					(GameMap.this.getBounds().height - pauseMessageImageHeight) / 2);
+		}
+
+		void printGameOverMessage(){
+			drawFieldForMessages();
+
+			String scoreMessage = getScoreMessage();
+			drawScoreMessage(scoreMessage);
+			drawGameOverMessage();
+			if (!timerTaskScheduled) {
+				new Timer().schedule(new TimerTask() {
+
+					@Override
+					public void run() {
+						if (isGameOver() && !MainWindow.getDisplay().isDisposed())
+							needShowHint = !needShowHint;
+						else
+							cancel();
+					}
+
+				}, 0, 1000);
+				timerTaskScheduled = true;
+			}
+			if (needShowHint) {
+				drawNewGameHint();
+			}
+		}
+
+		private void drawNewGameHint() {
+			Point hintMessageBounds = gc.textExtent(NEW_GAME_HINT);
+			gc.drawText(NEW_GAME_HINT,
+					(GameMap.this.getBounds().width - hintMessageBounds.x) / 2,
+					GameMap.this.getBounds().height / 2 + hintMessageBounds.y + 20, true);
+		}
+
+		private void drawScoreMessage(String scoreMessage) {
+			Point scoreMessageBounds = gc.textExtent(scoreMessage);
+			gc.drawText(scoreMessage, (GameMap.this.getBounds().width - scoreMessageBounds.x) / 2,
+					GameMap.this.getBounds().height / 2 - scoreMessageBounds.y - 10, true);
+		}
+
+		private void drawGameOverMessage() {
+			Point gameOverMessageBounds = gc.textExtent(GAME_OVER_MESSAGE);
+			gc.drawText(GAME_OVER_MESSAGE, (GameMap.this.getBounds().width - gameOverMessageBounds.x) / 2,
+					GameMap.this.getBounds().height / 2, true);
+		}
+
+		private String getScoreMessage() {
+			int currentScore = GameLoop.getGameLoop().getPlayers().get(0).getPassed() / 10;
+			StringBuilder scoreMessage = new StringBuilder(SCORE + currentScore);
+			if (currentScore <= userRecord)
+				scoreMessage.append(RECORD).append(userRecord);
+			else
+				scoreMessage.append(NEW_RECORD);
+			return scoreMessage.toString();
+		}
+
+		private void drawFieldForMessages() {
+			int gameOverMessageImageWidth = GAME_OVER.getImageData().width;
+			int gameOverMessageImageHeight = GAME_OVER.getImageData().height;
+			gc.drawImage(GAME_OVER, (GameMap.this.getBounds().width - gameOverMessageImageWidth) / 2,
+					(GameMap.this.getBounds().height - gameOverMessageImageHeight) / 2);
+		}
+
+		void dispose(){
+			staticTextFont.dispose();
+			staticTextColor.dispose();
+		}
+	}
+
+    static class Factory{
+        public static GameMap buildMap(List<Dude> players, List<Sprite> sprites, List<Back> backgrounds){
+            return new GameMap(players, sprites, backgrounds);
+        }
+    }
 }

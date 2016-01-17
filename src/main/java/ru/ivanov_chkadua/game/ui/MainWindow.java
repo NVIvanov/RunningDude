@@ -2,10 +2,7 @@ package ru.ivanov_chkadua.game.ui;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -17,9 +14,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import ru.ivanov_chkadua.game.BlockReader;
 import ru.ivanov_chkadua.game.GameMap;
-import ru.ivanov_chkadua.sprites.Sprite;
+import ru.ivanov_chkadua.sprites.SpriteContainer;
 
-import java.io.IOException;
 import java.util.List;
 
 import static ru.ivanov_chkadua.game.GameLoop.*;
@@ -30,11 +26,15 @@ import static ru.ivanov_chkadua.game.GameLoop.*;
  *
  */
 public class MainWindow {
-	private static Shell shell;
+    public static final int ENTER_KEY_CODE = 13;
+    public static final String EMPTY_FILENAME = "Если выбираете пользовательский режим, вам надо указать файл с набором блоков препятствий (см. документацию).";
+    public static final String ERROR_TITLE = "Ошибка";
+    public static final String INVALID_FILE = "Выберите подходящий файл для генерации блоков (См. документацию).";
+    private static Shell shell;
 	private static Display display;
 	private static Difficulty difficulty = Difficulty.EASY;
 	private static String blockSequenceFileName;
-	private static List<Sprite> blockSequence;
+	private static List<SpriteContainer> blockSequence;
 	
 	/**
 	 * Метод получения кэшированного объекта Shell
@@ -106,43 +106,17 @@ public class MainWindow {
 		startLabelGridData.heightHint = SWT.DEFAULT;
 		startLabelGridData.horizontalSpan = 3;
 		start.setLayoutData(startLabelGridData);
-		
-		final Label easy = new Label(shell, SWT.NONE);
-		easy.setBackground(white);		
-		easy.setImage(easyModeNormal);
-		
-		final Label normal = new Label(shell, SWT.NONE);
-		normal.setBackground(white);
-		normal.setImage(mediumModeNormal);
-		
-		
-		final Label hard = new Label(shell, SWT.NONE);
-		hard.setBackground(white);
-		hard.setImage(hardModeNormal);
 
-		final Label user = new Label(shell, SWT.NONE);
-		user.setBackground(white);
-		user.setImage(userModeNormal);
-		
-		GridData DifficultyGridData = new GridData(SWT.LEFT, SWT.BOTTOM, true, true);
-		DifficultyGridData.widthHint = SWT.MAX;
-		DifficultyGridData.heightHint = 95;
-		easy.setLayoutData(DifficultyGridData);
-		normal.setLayoutData(DifficultyGridData);
-		hard.setLayoutData(DifficultyGridData);
-		user.setLayoutData(DifficultyGridData);
+        GridData DifficultyGridData = new GridData(SWT.LEFT, SWT.BOTTOM, true, true);
+        DifficultyGridData.widthHint = SWT.MAX;
+        DifficultyGridData.heightHint = 95;
 
-        info.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseDoubleClick(MouseEvent mouseEvent) {
+        final Label easy = initLabel(easyModeNormal, white, DifficultyGridData);
+        final Label normal = initLabel(mediumModeNormal, white, DifficultyGridData);
+        final Label hard = initLabel(hardModeNormal, white, DifficultyGridData);
+        final Label user = initLabel(userModeNormal, white, DifficultyGridData);
 
-            }
-
-            @Override
-            public void mouseDown(MouseEvent mouseEvent) {
-
-            }
-
+        info.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseUp(MouseEvent mouseEvent) {
                 InfoWindow infoWindow = new InfoWindow();
@@ -150,7 +124,7 @@ public class MainWindow {
             }
         });
 
-		easy.addMouseListener(new MouseListener() {
+		easy.addMouseListener(new MouseAdapter() {
 			
 			@Override
 			public void mouseUp(MouseEvent e) {
@@ -160,15 +134,9 @@ public class MainWindow {
 				hard.setImage(hardModeNormal);
 				user.setImage(userModeNormal);
 			}
-			
-			@Override
-			public void mouseDown(MouseEvent e) {}
-			
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {}
 		});
 		
-		normal.addMouseListener(new MouseListener() {
+		normal.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseUp(MouseEvent e) {
@@ -178,17 +146,9 @@ public class MainWindow {
 				hard.setImage(hardModeNormal);
 				user.setImage(userModeNormal);
 			}
-
-			@Override
-			public void mouseDown(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-			}
 		});
 		
-		hard.addMouseListener(new MouseListener() {
+		hard.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseUp(MouseEvent e) {
@@ -198,17 +158,9 @@ public class MainWindow {
 				hard.setImage(hardModeSelected);
 				user.setImage(userModeNormal);
 			}
-
-			@Override
-			public void mouseDown(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-			}
 		});
 
-		user.addMouseListener(new MouseListener() {
+		user.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
 				easy.setImage(easyModeNormal);
@@ -218,16 +170,6 @@ public class MainWindow {
                 difficulty = Difficulty.USER;
                 blockSequenceFileName = new FileDialog(shell).open();
 			}
-
-			@Override
-			public void mouseDown(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-
-			}
 		});
 
 		start.addMouseListener(new MouseListener() {
@@ -236,15 +178,39 @@ public class MainWindow {
 			public void mouseUp(MouseEvent e) {
                 blockSequenceFileName = getFileNameUsingDifficulty();
                 if (blockSequenceFileName == null){
-                    MessageDialog.openError(shell, "Ошибка", "Если выбираете пользовательский режим, вам надо указать файл с набором блоков препятствий (см. документацию).");
+                    Display.getDefault().asyncExec(() -> MessageDialog.openError(shell, ERROR_TITLE, EMPTY_FILENAME));
                     return;
                 }
 				try {
 					blockSequence = new BlockReader().getBlocksList(blockSequenceFileName);
 				} catch (Exception e1) {
-					MessageDialog.openError(shell, "Ошибка", "Выберите подходящий файл для генерации блоков (См. документацию).");
+                    Display.getDefault().asyncExec(() -> MessageDialog.openError(shell, ERROR_TITLE, INVALID_FILE));
                     return;
 				}
+                disposeResources();
+				shell.setLayout(new FillLayout());
+				shell.addKeyListener(new KeyAdapter() {
+					
+					@Override
+					public void keyReleased(KeyEvent e) {
+						switch (e.keyCode){
+						case ENTER_KEY_CODE:
+                            restartGame();
+							break;
+						}
+					}
+
+                    private void restartGame() {
+                        getGameLoop().stop();
+                        GameMap.getInstance().dispose();
+                        prepareAndStartGame(difficulty, blockSequence);
+                    }
+
+                });
+				prepareAndStartGame(difficulty, blockSequence);
+			}
+
+            private void disposeResources() {
                 startNormal.dispose();
                 easyModeSelected.dispose();
                 easyModeNormal.dispose();
@@ -254,33 +220,15 @@ public class MainWindow {
                 hardModeSelected.dispose();
                 userModeNormal.dispose();
                 userModeSelected.dispose();
-				start.dispose();
-				easy.dispose();
-				normal.dispose();
-				hard.dispose();
-				user.dispose();
+                start.dispose();
+                easy.dispose();
+                normal.dispose();
+                hard.dispose();
+                user.dispose();
                 info.dispose();
-				shell.setLayout(new FillLayout());
-				shell.addKeyListener(new KeyListener() {
-					
-					@Override
-					public void keyReleased(KeyEvent e) {
-						switch (e.keyCode){
-						case 13:
-							getGameLoop().stop();
-							GameMap.getInstance().dispose();
-							prepareAndStartGame(difficulty, blockSequence);
-							break;
-						}
-					}
-					
-					@Override
-					public void keyPressed(KeyEvent e) {}
-				});
-				prepareAndStartGame(difficulty, blockSequence);
-			}
+            }
 
-			private String getFileNameUsingDifficulty(){
+            private String getFileNameUsingDifficulty(){
 				switch (difficulty){
 					case EASY:
 						return "./easy.txt";
@@ -300,8 +248,6 @@ public class MainWindow {
 			public void mouseDoubleClick(MouseEvent e) {}
 		});
 
-
-
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 1;
 		shell.setLayout(layout);
@@ -315,4 +261,12 @@ public class MainWindow {
 
 		});
 	}
+
+    private static Label initLabel(Image labelImage, Color backgroundColor, GridData difficultyGridData) {
+        final Label easy = new Label(shell, SWT.NONE);
+        easy.setBackground(backgroundColor);
+        easy.setImage(labelImage);
+        easy.setLayoutData(difficultyGridData);
+        return easy;
+    }
 }

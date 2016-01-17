@@ -12,7 +12,8 @@ import ru.ivanov_chkadua.sprites.Sprite;
  */
 final public class BackgroundGenerator implements Manager{
 
-	private static final String EMPTY_BACKGROUND_LIST = "Внедрять менеджер фона можно только при непустом списке фонов в игровом цикле";
+	private static final String EMPTY_BACKGROUND_LIST = "Внедрять менеджер фона можно только при непустом списке" +
+			" фонов в игровом цикле";
 
 	/**
 	 * Проверяет, вышел ли первый в списке фон за границу экрана, и, если это так, убирает его из списка объектов игрового цикла

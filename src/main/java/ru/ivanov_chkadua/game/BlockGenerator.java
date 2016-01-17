@@ -11,7 +11,8 @@ import ru.ivanov_chkadua.sprites.*;
  * @author n_ivanov
  */
 final public class BlockGenerator implements Manager{
-	private static final String EMPTY_LIST_OF_INTERACTIVE_SPRITES = "Внедрять менеджер блоков препятствий можно только, если препятствия присутствуют в игровом цикле.";
+	private static final String EMPTY_LIST_OF_INTERACTIVE_SPRITES = "Внедрять менеджер блоков препятствий можно" +
+			" только, если препятствия присутствуют в игровом цикле.";
 	private int standardOffset;
 	/**
 	 * Конструктор менеджера блоков пропятствий
@@ -56,22 +57,25 @@ final public class BlockGenerator implements Manager{
 		if (firstBlock == null || lastBlock == null){
             throw new IllegalStateException(EMPTY_LIST_OF_INTERACTIVE_SPRITES);
         }
-
-		Rectangle firstBlockBounds = firstBlock.bounds();
-		Rectangle lastBlockBounds = lastBlock.bounds();
-		if (firstBlockBounds.x + firstBlockBounds.width < 0){
-			GameLoop.getGameLoop().removeSprite(firstBlock);
-			int rand = new Random().nextInt(100);
-			if (GameLoop.getGameLoop().getBlockInstances().size() != 0){
-			int rem = rand % GameLoop.getGameLoop().getBlockInstances().size();
-				Sprite newBlock = new Sprite(GameLoop.getGameLoop().getBlockInstances().get(rem));
-				newBlock.replace(lastBlockBounds.width + lastBlockBounds.x + standardOffset, 0);
-				GameLoop.getGameLoop().addSprite(newBlock);
-			}
-		}
+        addNewBlock(firstBlock, lastBlock);
 	}
-	
-	/**
+
+    private void addNewBlock(Sprite firstBlock, Sprite lastBlock) {
+        Rectangle firstBlockBounds = firstBlock.bounds();
+        Rectangle lastBlockBounds = lastBlock.bounds();
+        if (firstBlockBounds.x + firstBlockBounds.width < 0){
+            GameLoop.getGameLoop().removeSprite(firstBlock);
+            int rand = new Random().nextInt(100);
+            if (GameLoop.getGameLoop().getBlockInstances().size() != 0){
+            int rem = rand % GameLoop.getGameLoop().getBlockInstances().size();
+                Sprite newBlock = new SpriteContainer(GameLoop.getGameLoop().getBlockInstances().get(rem));
+                newBlock.replace(lastBlockBounds.width + lastBlockBounds.x + standardOffset, 0);
+                GameLoop.getGameLoop().addSprite(newBlock);
+            }
+        }
+    }
+
+    /**
 	 * 
 	 * @return первое препятствие в списке препятствий игрового цикла
 	 */
