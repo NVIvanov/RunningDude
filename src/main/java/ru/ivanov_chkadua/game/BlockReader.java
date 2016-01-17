@@ -7,8 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Класс для генерации набора блоков препятствий из JSON
@@ -26,6 +25,7 @@ public class BlockReader {
         List<SpriteContainer> blocks = new ArrayList<>();
         JsonReader reader = new JsonReader(new InputStreamReader(is));
         reader.setLenient(true);
+
         reader.beginArray();
         while (reader.hasNext()) {
             reader.beginObject();

@@ -23,12 +23,6 @@ public class SpriteContainer extends Sprite{
         }
     }
 
-    /**
-     * Добавляет дочерний спрайт. Если добавлен хоть один дочерний спрайт, то методы отрисовки и наложения будут вызываться автоматически для всех дочерних спрайтов, но не для текущего.
-     * Размещение дочерний спрайтов происходит относительно последнего добавленного, друг за другом.
-     * @param sprite дочерний спрайт
-     * @param offsetX смещение относительно предыдущего спрайта
-     */
     final public void addChild(Sprite sprite, int offsetX){
         if (children.size() == 0)
             sprite.replace(placement.x + offsetX, 0);
